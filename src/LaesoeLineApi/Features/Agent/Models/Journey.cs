@@ -19,8 +19,8 @@ namespace LaesoeLineApi.Features.Agent.Models
 
         public int Infants { get; set; }
 
-        public int Passengers => Seniors + Adults + Children + Infants;
+        public int VehiclePassengers { get; set; }
 
-        public Vehicle Vehicle { get; set; } = Vehicle.Car;
+        public Vehicle Vehicle { get; set; } = Vehicle.None;
     }
 }

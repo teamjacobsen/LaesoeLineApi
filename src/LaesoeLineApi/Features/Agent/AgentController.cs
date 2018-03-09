@@ -33,32 +33,44 @@ namespace LaesoeLineApi.Features.Agent
                 return Unauthorized();
             }
 
-            string bookingNumber = null;
+            var bookResult = new BookResult();
             var status = await Task.Factory.StartNew(() =>
             {
                 var loginPage = _webDriver.GoTo<LoginPage>();
                 loginPage.Login(credentials.Username, credentials.Password);
 
                 var bookPage = _webDriver.GoTo<BookPage>();
-                var result = bookPage.BookItRoundTrip(command.Outbound, command.Return);
-                bookingNumber = bookPage.BookingNumber;
+                var result = bookPage.BookItRoundTrip(command.Customer, command.Outbound, command.Return);
+                bookResult.BookingNumber = bookPage.BookingNumber;
+                bookResult.BookingPassword = bookPage.BookingPassword;
+                bookResult.Price = bookPage.Price;
 
                 return result;
             });
 
             if (status == BookStatus.Success)
             {
-                var result = new BookResult()
-                {
-                    BookingNumber = bookingNumber
-                };
-
-                return Ok(result);
+                return Ok(bookResult);
             }
             else
             {
                 return StatusCode(StatusCodes.Status422UnprocessableEntity, status);
             }
+        }
+
+        [HttpDelete("Bookings/{bookingNumber}")]
+        public async Task<IActionResult> Cancel(string bookingNumber, string bookingPassword)
+        {
+            await Task.Factory.StartNew(() =>
+            {
+                var myBookingPage = _webDriver.GoTo<MyBookingPage>();
+                myBookingPage.Login(bookingNumber, bookingPassword);
+
+                var bookingConfirmationPage = _webDriver.GoTo<BookingConfirmationPage>();
+                bookingConfirmationPage.Cancel();
+            });
+
+            return NoContent();
         }
     }
 }

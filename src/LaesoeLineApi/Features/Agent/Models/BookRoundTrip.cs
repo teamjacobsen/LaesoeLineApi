@@ -6,6 +6,9 @@ namespace LaesoeLineApi.Features.Agent.Models
     public class BookRoundTrip : IValidatableObject
     {
         [Required]
+        public Guest Customer { get; set; }
+
+        [Required]
         public Journey Outbound { get; set; }
 
         [Required]

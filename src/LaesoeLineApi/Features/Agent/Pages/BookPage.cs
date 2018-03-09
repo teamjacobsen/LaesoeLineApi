@@ -1,6 +1,8 @@
 ﻿using LaesoeLineApi.Features.Agent.Models;
 using OpenQA.Selenium;
+using System;
 using System.Globalization;
+using System.Linq;
 
 namespace LaesoeLineApi.Features.Agent.Pages
 {
@@ -9,6 +11,8 @@ namespace LaesoeLineApi.Features.Agent.Pages
         public string Url { get; } = "https://booking.laesoe-line.dk/dk/book/it/Rejsedetaljer/";
         public IWebDriver Driver { get; private set; }
         public string BookingNumber { get; set; }
+        public string BookingPassword { get; set; }
+        public decimal Price { get; set; }
 
         // Booking Details
         private IWebElement ItRoundTripRadio => Driver.FindVisibleElement(By.Id("cw-bookingflow-IT"));
@@ -39,13 +43,29 @@ namespace LaesoeLineApi.Features.Agent.Pages
 
         // Departure Select
         private static readonly By DepartureTableSelector = By.ClassName("choosejourney-departures");
+        private IWebElement OutboundDepartureRadio(DateTime departure) => Driver.FindVisibleElement(By.CssSelector($"input[name=\"cw_choosejourney_j1_departures\"][data-cw-departure-datetime=\"{departure.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}\"]"));
+        private IWebElement ReturnDepartureRadio(DateTime departure) => Driver.FindVisibleElement(By.CssSelector($"input[name=\"cw_choosejourney_j2_departures\"][data-cw-departure-datetime=\"{departure.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}\"]"));
+        private IWebElement DepartureNextButton => Driver.FindVisibleElement(By.CssSelector("button.cw-action-next"));
+
+        // Contact Information
+        private IWebElement LastNameText => Driver.FindVisibleElement(By.Id("lastName"));
+        private IWebElement MobileText => Driver.FindVisibleElement(By.Id("mobile"));
+        private IWebElement EmailText => Driver.FindVisibleElement(By.Id("email"));
+        private IWebElement TermsCheckbox => Driver.FindVisibleElement(By.Id("acceptTerms"));
+        private IWebElement ContactNextButton => Driver.FindVisibleElement(By.CssSelector("button.cw-action-next"));
+
+        // Confirmation
+        private static readonly By BookingNumberDivSelector = By.CssSelector("div.cw-booking-code");
+        private IWebElement BookingNumberDiv => Driver.FindVisibleElement(BookingNumberDivSelector);
+        private IWebElement BookingPasswordDiv => Driver.FindVisibleElement(By.ClassName("cw-booking-pwd"));
+        private IWebElement TotalPriceSpan => Driver.FindVisibleElements(By.ClassName("total-label-price")).First();
 
         public BookPage(IWebDriver driver)
         {
             Driver = driver;
         }
 
-        public BookStatus BookItRoundTrip(Journey outbound, Journey @return)
+        public BookStatus BookItRoundTrip(Guest guest, Journey outbound, Journey @return)
         {
             // Booking Details
             ItRoundTripRadio.Click();
@@ -56,7 +76,7 @@ namespace LaesoeLineApi.Features.Agent.Pages
 
             OutboundCrossingSelect.SelectByIndex((int)outbound.Crossing);
             Driver.SetValueWithScript(OutboundDepartureCalendarCssSelector, outbound.Departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
-            OutboundPassengersSelect.SelectByValue(outbound.Passengers.ToString());
+            OutboundPassengersSelect.SelectByValue(outbound.VehiclePassengers.ToString());
             OutboundAdultsSelect.SelectByValue(outbound.Adults.ToString());
             OutboundChildrenSelect.SelectByValue(outbound.Children.ToString());
             OutboundSeniorsSelect.SelectByValue(outbound.Seniors.ToString());
@@ -69,7 +89,7 @@ namespace LaesoeLineApi.Features.Agent.Pages
 
             ReturnCrossingSelect.SelectByIndex((int)@return.Crossing);
             Driver.SetValueWithScript(ReturnDepartureCalendarCssSelector, @return.Departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
-            ReturnPassengersSelect.SelectByValue(@return.Passengers.ToString());
+            ReturnPassengersSelect.SelectByValue(@return.VehiclePassengers.ToString());
             ReturnAdultsSelect.SelectByValue(@return.Adults.ToString());
             ReturnChildrenSelect.SelectByValue(@return.Children.ToString());
             ReturnSeniorsSelect.SelectByValue(@return.Seniors.ToString());
@@ -84,6 +104,39 @@ namespace LaesoeLineApi.Features.Agent.Pages
 
             // Departure Select
             Driver.WaitForElementToAppear(DepartureTableSelector);
+            var outboundDepartureRadio = OutboundDepartureRadio(outbound.Departure);
+            if (outboundDepartureRadio == null)
+            {
+                return BookStatus.OutboundDepartureNotFound;
+            }
+            outboundDepartureRadio.Click();
+
+            Driver.WaitForElementToAppear(DepartureTableSelector, 2);
+            var returnDepartureRadio = ReturnDepartureRadio(@return.Departure);
+            if (returnDepartureRadio == null)
+            {
+                return BookStatus.ReturnDepartureNotFound;
+            }
+            returnDepartureRadio.Click();
+
+            DepartureNextButton.Click();
+
+            // Contact Information
+            LastNameText.Clear();
+            LastNameText.SendKeys(guest.Name);
+            MobileText.Clear();
+            MobileText.SendKeys(guest.PhoneNumber);
+            EmailText.Clear();
+            EmailText.SendKeys(guest.Email);
+            TermsCheckbox.Click();
+
+            ContactNextButton.Click();
+
+            // Confirmation
+            Driver.WaitForElementToAppear(BookingNumberDivSelector);
+            BookingNumber = BookingNumberDiv.Text;
+            BookingPassword = BookingPasswordDiv.Text;
+            Price = decimal.Parse(TotalPriceSpan.Text.Replace(" DKK", string.Empty).Replace(',', '.'), CultureInfo.InvariantCulture);
 
             return BookStatus.Success;
         }
@@ -92,6 +145,9 @@ namespace LaesoeLineApi.Features.Agent.Pages
         {
             switch (vehicle)
             {
+                case Vehicle.None:
+                    value = string.Empty;
+                    return true;
                 case Vehicle.Car:
                     value = "19";
                     return true;

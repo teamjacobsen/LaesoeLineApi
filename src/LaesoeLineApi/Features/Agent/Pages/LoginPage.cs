@@ -7,7 +7,8 @@ namespace LaesoeLineApi.Features.Agent.Pages
         public string Url { get; } = "https://booking.laesoe-line.dk/dk/book/it/customerLogin/";
         public IWebDriver Driver { get; private set; }
 
-        private IWebElement Username => Driver.FindVisibleElement(By.Id("username"));
+        private static readonly By UsernameSelector = By.Id("username");
+        private IWebElement Username => Driver.FindVisibleElement(UsernameSelector);
         private IWebElement Password => Driver.FindVisibleElement(By.Id("password"));
         private IWebElement Submit => Driver.FindVisibleElement(By.CssSelector("button[type=submit]"));
 
@@ -18,6 +19,9 @@ namespace LaesoeLineApi.Features.Agent.Pages
 
         public void Login(string username, string password)
         {
+            // Wait for login to show
+            Driver.WaitForElementToAppear(UsernameSelector);
+
             Username.SendKeys(username);
             Password.SendKeys(password);
             Submit.Click();
