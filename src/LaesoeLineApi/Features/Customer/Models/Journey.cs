@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace LaesoeLineApi.Features.Customer.Models
@@ -11,6 +12,7 @@ namespace LaesoeLineApi.Features.Customer.Models
         [Required]
         public DateTime Departure { get; set; }
 
+        [Range(1, int.MaxValue)]
         public int Passengers { get; set; } = 1;
 
         public Vehicle Vehicle { get; set; } = Vehicle.Car;
