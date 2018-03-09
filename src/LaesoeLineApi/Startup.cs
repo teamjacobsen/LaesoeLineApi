@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using LaesoeLineApi.Converters;
+using LaesoeLineApi.Features.Timetable;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Converters;
 
 namespace LaesoeLineApi
 {
@@ -22,8 +25,12 @@ namespace LaesoeLineApi
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddSingleton<CrawlDeparturesProcessor>()
+                .AddSingleton<DepartureCache>()
+                .AddDistributedMemoryCache()
                 .AddChromeSeleniumWebDriver(options => options.Headless = _hostingEnvironment.IsProduction() || false)
-                .AddMvc();
+                .AddMvc()
+                    .AddJsonOptions(options => options.SerializerSettings.Converters.Add(new CamelCaseEnumDictionaryKeyConverter()));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
