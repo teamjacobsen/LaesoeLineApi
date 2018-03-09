@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaesoeLineApi", "src\LaesoeLineApi\LaesoeLineApi.csproj", "{D8BDFC6F-E937-4A18-BD99-B86806B78A22}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D8BDFC6F-E937-4A18-BD99-B86806B78A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8BDFC6F-E937-4A18-BD99-B86806B78A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8BDFC6F-E937-4A18-BD99-B86806B78A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8BDFC6F-E937-4A18-BD99-B86806B78A22}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BD144E5B-60FB-4E7D-9D4B-348C36F849F2}
+	EndGlobalSection
+EndGlobal
