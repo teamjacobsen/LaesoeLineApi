@@ -17,6 +17,7 @@ namespace LaesoeLineApi.Features.Timetable
             _options = options;
         }
 
+        //  Runs when webserver starts
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
             var isFirstRun = true;
