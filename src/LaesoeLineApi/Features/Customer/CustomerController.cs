@@ -33,7 +33,7 @@ namespace LaesoeLineApi.Features.Customer
                 return Unauthorized();
             }
 
-            string bookingNumber = null;
+            var bookResult = new BookResult();
             var status = await Task.Factory.StartNew(() =>
             {
                 var customerProfilePage = _webDriver.GoTo<CustomerProfilePage>();
@@ -41,19 +41,15 @@ namespace LaesoeLineApi.Features.Customer
 
                 var bookSeasonPassPage = _webDriver.GoTo<BookSeasonPassPage>();
                 var result = bookSeasonPassPage.BookOneWay(command.Journey, command.Local);
-                bookingNumber = bookSeasonPassPage.BookingNumber;
+                bookResult.BookingNumber = bookSeasonPassPage.BookingNumber;
+                bookResult.BookingPassword = bookSeasonPassPage.BookingPassword;
 
                 return result;
             });
 
             if (status == BookStatus.Success)
             {
-                var result = new BookResult()
-                {
-                    BookingNumber = bookingNumber
-                };
-
-                return Ok(result);
+                return Ok(bookResult);
             }
             else
             {
@@ -76,7 +72,7 @@ namespace LaesoeLineApi.Features.Customer
                 return Unauthorized();
             }
 
-            string bookingNumber = null;
+            var bookResult = new BookResult();
             var status = await Task.Factory.StartNew(() =>
             {
                 var customerProfilePage = _webDriver.GoTo<CustomerProfilePage>();
@@ -84,20 +80,15 @@ namespace LaesoeLineApi.Features.Customer
 
                 var bookSeasonPassPage = _webDriver.GoTo<BookSeasonPassPage>();
                 var result = bookSeasonPassPage.BookRoundTrip(command.Outbound, command.Return, command.Local);
-
-                bookingNumber = bookSeasonPassPage.BookingNumber;
+                bookResult.BookingNumber = bookSeasonPassPage.BookingNumber;
+                bookResult.BookingPassword = bookSeasonPassPage.BookingPassword;
 
                 return result;
             });
 
             if (status == BookStatus.Success)
             {
-                var result = new BookResult()
-                {
-                    BookingNumber = bookingNumber
-                };
-
-                return Ok(result);
+                return Ok(bookResult);
             }
             else
             {

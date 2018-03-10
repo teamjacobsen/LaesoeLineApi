@@ -57,20 +57,5 @@ namespace LaesoeLineApi.Features.Agent
                 return StatusCode(StatusCodes.Status422UnprocessableEntity, status);
             }
         }
-
-        [HttpDelete("Bookings/{bookingNumber}")]
-        public async Task<IActionResult> Cancel(string bookingNumber, string bookingPassword)
-        {
-            await Task.Factory.StartNew(() =>
-            {
-                var myBookingPage = _webDriver.GoTo<MyBookingPage>();
-                myBookingPage.Login(bookingNumber, bookingPassword);
-
-                var bookingConfirmationPage = _webDriver.GoTo<BookingConfirmationPage>();
-                bookingConfirmationPage.Cancel();
-            });
-
-            return NoContent();
-        }
     }
 }

@@ -10,6 +10,7 @@ namespace LaesoeLineApi.Features.Customer.Pages
         public string Url { get; } = "https://booking.laesoe-line.dk/dk/book/aarskort-2018/Rejsedetaljer/";
         public IWebDriver Driver { get; private set; }
         public string BookingNumber { get; set; }
+        public string BookingPassword { get; set; }
 
         // Booking Details
         private IWebElement SeasonPassOneWayRadio => Driver.FindVisibleElement(By.Id("cw-bookingflow-ÅRS18ENK"));
@@ -46,6 +47,7 @@ namespace LaesoeLineApi.Features.Customer.Pages
         // Confirmation
         private static readonly By BookingNumberDivSelector = By.CssSelector("div.cw-booking-code");
         private IWebElement BookingNumberDiv => Driver.FindVisibleElement(BookingNumberDivSelector);
+        private IWebElement BookingPasswordDiv => Driver.FindVisibleElement(By.ClassName("cw-booking-pwd"));
 
         public BookSeasonPassPage(IWebDriver driver)
         {
@@ -96,6 +98,7 @@ namespace LaesoeLineApi.Features.Customer.Pages
             // Confirmation
             Driver.WaitForElementToAppear(BookingNumberDivSelector);
             BookingNumber = BookingNumberDiv.Text;
+            BookingPassword = BookingPasswordDiv.Text;
 
             return BookStatus.Success;
         }
@@ -163,6 +166,7 @@ namespace LaesoeLineApi.Features.Customer.Pages
             // Confirmation
             Driver.WaitForElementToAppear(BookingNumberDivSelector);
             BookingNumber = BookingNumberDiv.Text;
+            BookingPassword = BookingPasswordDiv.Text;
 
             return BookStatus.Success;
         }
