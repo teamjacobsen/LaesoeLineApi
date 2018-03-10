@@ -3,6 +3,7 @@
     public enum Vehicle
     {
         None,
-        Car
+        Car,
+        Van
     }
 }

@@ -1,6 +1,7 @@
 ﻿using LaesoeLineApi.Features.Customer.Models;
 using OpenQA.Selenium;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace LaesoeLineApi.Features.Customer.Pages
@@ -49,6 +50,12 @@ namespace LaesoeLineApi.Features.Customer.Pages
         private IWebElement BookingNumberDiv => Driver.FindVisibleElement(BookingNumberDivSelector);
         private IWebElement BookingPasswordDiv => Driver.FindVisibleElement(By.ClassName("cw-booking-pwd"));
 
+        private static readonly Dictionary<Vehicle, string> VehicleValues = new Dictionary<Vehicle, string>()
+        {
+            { Vehicle.None, string.Empty },
+            { Vehicle.Car, "319" }
+        };
+
         public BookSeasonPassPage(IWebDriver driver)
         {
             Driver = driver;
@@ -71,7 +78,7 @@ namespace LaesoeLineApi.Features.Customer.Pages
             OutboundCrossingSelect.SelectByIndex((int)journey.Crossing);
             Driver.SetValueWithScript(OutboundDepartureCalendarCssSelector, journey.Departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
             OutboundPassengersSelect.SelectByValue(journey.Passengers.ToString());
-            if (!TryGetVehicleValue(journey.Vehicle, out var vehicleValue))
+            if (!VehicleValues.TryGetValue(journey.Vehicle, out var vehicleValue))
             {
                 return BookStatus.VehicleNotFound;
             }
@@ -122,7 +129,7 @@ namespace LaesoeLineApi.Features.Customer.Pages
             OutboundCrossingSelect.SelectByIndex((int)outbound.Crossing);
             Driver.SetValueWithScript(OutboundDepartureCalendarCssSelector, outbound.Departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
             OutboundPassengersSelect.SelectByValue(outbound.Passengers.ToString());
-            if (!TryGetVehicleValue(outbound.Vehicle, out var outboundVehicleValue))
+            if (!VehicleValues.TryGetValue(outbound.Vehicle, out var outboundVehicleValue))
             {
                 return BookStatus.VehicleNotFound;
             }
@@ -131,7 +138,7 @@ namespace LaesoeLineApi.Features.Customer.Pages
             ReturnCrossingSelect.SelectByIndex((int)@return.Crossing);
             Driver.SetValueWithScript(ReturnDepartureCalendarCssSelector, @return.Departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
             ReturnPassengersSelect.SelectByValue(@return.Passengers.ToString());
-            if (!TryGetVehicleValue(@return.Vehicle, out var returnVehicleValue))
+            if (!VehicleValues.TryGetValue(@return.Vehicle, out var returnVehicleValue))
             {
                 return BookStatus.VehicleNotFound;
             }
@@ -169,19 +176,6 @@ namespace LaesoeLineApi.Features.Customer.Pages
             BookingPassword = BookingPasswordDiv.Text;
 
             return BookStatus.Success;
-        }
-
-        private bool TryGetVehicleValue(Vehicle vehicle, out string value)
-        {
-            switch (vehicle)
-            {
-                case Vehicle.Car:
-                    value = "319";
-                    return true;
-                default:
-                    value = default;
-                    return false;
-            }
         }
     }
 }

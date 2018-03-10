@@ -23,10 +23,9 @@ namespace LaesoeLineApi.Features.Timetable
 
         public Task SyncDeparturesAsync(Crossing crossing, DateTime date, int days, CancellationToken cancellationToken = default)
         {
-            var vehicles = new[] { Vehicle.Car };
-
             var vehicleResults = new Dictionary<DateTime, DepartureInfo[]>();
 
+            var vehicles = ((Vehicle[])Enum.GetValues(typeof(Vehicle))).Where(x => x != Vehicle.None);
             Parallel.ForEach(vehicles, vehicle =>
             {
                 cancellationToken.ThrowIfCancellationRequested();

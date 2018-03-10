@@ -1,5 +1,4 @@
-﻿using LaesoeLineApi.Features.Timetable.Models;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -30,6 +29,13 @@ namespace LaesoeLineApi.Features.Timetable.Pages
 
         private IWebElement LaterDeparturesLink => Driver.FindVisibleElement(By.CssSelector("span[data-cw-action=\"laterDepartures\"]"));
 
+        private static readonly Dictionary<Vehicle, string> VehicleValues = new Dictionary<Vehicle, string>()
+        {
+            { Vehicle.None, string.Empty },
+            { Vehicle.Car, "19" },
+            { Vehicle.Van, "21" }
+        };
+
         public BookPage(IWebDriver driver)
         {
             Driver = driver;
@@ -47,7 +53,7 @@ namespace LaesoeLineApi.Features.Timetable.Pages
             CrossingSelect.SelectByIndex((int)crossing);
             Driver.SetValueWithScript(DepartureCalendarCssSelector, date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
             PassengersSelect.SelectByValue("1");
-            if (!TryGetVehicleValue(vehicle, out var vehicleValue))
+            if (!VehicleValues.TryGetValue(vehicle, out var vehicleValue))
             {
                 return null;
             }
@@ -71,28 +77,15 @@ namespace LaesoeLineApi.Features.Timetable.Pages
                     var timeString = row.FindElement(By.ClassName("departs")).Text.Trim();
                     var time = TimeSpan.ParseExact(timeString, @"hh\.mm", CultureInfo.InvariantCulture);
 
-                    var isAvailable = true;
+                    var soldOut = row.FindElements(By.ClassName("cw-choosejourney-inactive")).Count > 0;
 
-                    dayDepartures.Add((day.Add(time), isAvailable));
+                    dayDepartures.Add((day.Add(time), !soldOut));
                 }
 
                 result[day] = dayDepartures.ToArray();
             }
 
             return result;
-        }
-
-        private bool TryGetVehicleValue(Vehicle vehicle, out string value)
-        {
-            switch (vehicle)
-            {
-                case Vehicle.Car:
-                    value = "19";
-                    return true;
-                default:
-                    value = default;
-                    return false;
-            }
         }
     }
 }

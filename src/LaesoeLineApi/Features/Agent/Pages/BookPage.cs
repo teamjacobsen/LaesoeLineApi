@@ -1,6 +1,7 @@
 ﻿using LaesoeLineApi.Features.Agent.Models;
 using OpenQA.Selenium;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -60,6 +61,13 @@ namespace LaesoeLineApi.Features.Agent.Pages
         private IWebElement BookingPasswordDiv => Driver.FindVisibleElement(By.ClassName("cw-booking-pwd"));
         private IWebElement TotalPriceSpan => Driver.FindVisibleElements(By.ClassName("total-label-price")).First();
 
+        private static readonly Dictionary<Vehicle, string> VehicleValues = new Dictionary<Vehicle, string>()
+        {
+            { Vehicle.None, string.Empty },
+            { Vehicle.Car, "19" },
+            { Vehicle.Van, "21" }
+        };
+
         public BookPage(IWebDriver driver)
         {
             Driver = driver;
@@ -81,7 +89,7 @@ namespace LaesoeLineApi.Features.Agent.Pages
             OutboundChildrenSelect.SelectByValue(outbound.Children.ToString());
             OutboundSeniorsSelect.SelectByValue(outbound.Seniors.ToString());
             OutboundInfantsSelect.SelectByValue(outbound.Infants.ToString());
-            if (!TryGetVehicleValue(outbound.Vehicle, out var outboundVehicleValue))
+            if (!VehicleValues.TryGetValue(outbound.Vehicle, out var outboundVehicleValue))
             {
                 return BookStatus.VehicleNotFound;
             }
@@ -94,7 +102,7 @@ namespace LaesoeLineApi.Features.Agent.Pages
             ReturnChildrenSelect.SelectByValue(@return.Children.ToString());
             ReturnSeniorsSelect.SelectByValue(@return.Seniors.ToString());
             ReturnInfantsSelect.SelectByValue(@return.Infants.ToString());
-            if (!TryGetVehicleValue(@return.Vehicle, out var returnVehicleValue))
+            if (!VehicleValues.TryGetValue(@return.Vehicle, out var returnVehicleValue))
             {
                 return BookStatus.VehicleNotFound;
             }
@@ -139,22 +147,6 @@ namespace LaesoeLineApi.Features.Agent.Pages
             Price = decimal.Parse(TotalPriceSpan.Text.Replace(" DKK", string.Empty).Replace(',', '.'), CultureInfo.InvariantCulture);
 
             return BookStatus.Success;
-        }
-
-        private bool TryGetVehicleValue(Vehicle vehicle, out string value)
-        {
-            switch (vehicle)
-            {
-                case Vehicle.None:
-                    value = string.Empty;
-                    return true;
-                case Vehicle.Car:
-                    value = "19";
-                    return true;
-                default:
-                    value = default;
-                    return false;
-            }
         }
     }
 }
