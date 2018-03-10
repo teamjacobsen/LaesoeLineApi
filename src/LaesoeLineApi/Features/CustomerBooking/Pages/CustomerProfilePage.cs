@@ -1,6 +1,6 @@
 ﻿using OpenQA.Selenium;
 
-namespace LaesoeLineApi.Features.Customer.Pages
+namespace LaesoeLineApi.Features.CustomerBooking.Pages
 {
     public class CustomerProfilePage : IPage
     {

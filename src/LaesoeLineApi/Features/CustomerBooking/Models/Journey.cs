@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace LaesoeLineApi.Features.Customer.Models
+namespace LaesoeLineApi.Features.CustomerBooking.Models
 {
     public class Journey
     {

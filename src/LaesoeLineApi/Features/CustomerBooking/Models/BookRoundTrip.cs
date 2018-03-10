@@ -1,18 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace LaesoeLineApi.Features.Agent.Models
+namespace LaesoeLineApi.Features.CustomerBooking.Models
 {
     public class BookRoundTrip : IValidatableObject
     {
-        [Required]
-        public Guest Customer { get; set; }
-
         [Required]
         public Journey Outbound { get; set; }
 
         [Required]
         public Journey Return { get; set; }
+
+        public bool Local { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

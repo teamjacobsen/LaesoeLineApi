@@ -1,19 +1,19 @@
-﻿using LaesoeLineApi.Features.Customer.Models;
-using LaesoeLineApi.Features.Customer.Pages;
+﻿using LaesoeLineApi.Features.CustomerBooking.Models;
+using LaesoeLineApi.Features.CustomerBooking.Pages;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenQA.Selenium;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace LaesoeLineApi.Features.Customer
+namespace LaesoeLineApi.Features.CustomerBooking
 {
     [Route("[controller]")]
-    public class CustomerController : ControllerBase
+    public class CustomerBookingController : ControllerBase
     {
         private readonly IWebDriver _webDriver;
 
-        public CustomerController(IWebDriver webDriver)
+        public CustomerBookingController(IWebDriver webDriver)
         {
             _webDriver = webDriver;
         }

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LaesoeLineApi.Features.Agent.Models
+namespace LaesoeLineApi.Features.AgentBooking.Models
 {
-    public class Guest
+    public class Customer
     {
         [Required]
         public string Name { get; set; }
