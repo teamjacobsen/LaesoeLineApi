@@ -37,7 +37,15 @@ namespace LaesoeLineApi.Features.Timetable
 
             var entries = hits.Select(json => JsonConvert.DeserializeObject<Entry>(json)).OrderBy(x => x.Date);
 
-            return entries.SelectMany(x => x.Departures).ToArray();
+            var departures = entries.SelectMany(x => x.Departures).ToArray();
+
+            var expectedNumberOfVehicles = Enum.GetValues(typeof(Vehicle)).Length - 1; // Do not include the None value
+            if (departures.Any(x => x.Availability.Count != expectedNumberOfVehicles))
+            {
+                return null;
+            }
+
+            return departures;
         }
 
         public Task SetDeparturesAsync(Crossing crossing, DateTime date, DepartureInfo[] departures, CancellationToken cancellationToken = default)
