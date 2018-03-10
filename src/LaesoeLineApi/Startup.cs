@@ -1,5 +1,4 @@
 ﻿using LaesoeLineApi.Converters;
-using LaesoeLineApi.Features.Timetable;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -24,8 +23,7 @@ namespace LaesoeLineApi
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddSingleton<CrawlDeparturesProcessor>()
-                .AddSingleton<DepartureCache>()
+                .AddTimetableFeature(Configuration.GetSection("Timetable"))
                 .AddDistributedMemoryCache()
                 .AddChromeSeleniumWebDriver(options => options.Headless = _hostingEnvironment.IsProduction() || false)
                 .AddMvc()

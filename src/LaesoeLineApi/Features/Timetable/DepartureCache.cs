@@ -23,19 +23,19 @@ namespace LaesoeLineApi.Features.Timetable
             _cache = cache;
         }
 
-        public async Task<DepartureInfo[]> GetDeparturesAsync(Crossing crossing, DateTime date, int days = 1, CancellationToken cancellationToken = default)
+        public async Task<DepartureInfo[]> GetDeparturesAsync(Crossing crossing, DateTime date, int days, bool allowIncompleteDays, CancellationToken cancellationToken = default)
         {
             var hits = await Task.WhenAll(
                 Enumerable.Range(0, days)
                     .Select(x => date.AddDays(x))
                     .Select(x => _cache.GetStringAsync(ComputeKey(crossing, x), cancellationToken)));
 
-            if (hits.Any(x => x == null))
+            if (!allowIncompleteDays && hits.Any(x => x == null))
             {
                 return null;
             }
 
-            var entries = hits.Select(json => JsonConvert.DeserializeObject<Entry>(json)).OrderBy(x => x.Date);
+            var entries = hits.Where(x => x != null).Select(json => JsonConvert.DeserializeObject<Entry>(json)).OrderBy(x => x.Date);
 
             var departures = entries.SelectMany(x => x.Departures).ToArray();
 

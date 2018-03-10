@@ -71,6 +71,12 @@ namespace LaesoeLineApi.Features.Timetable.Pages
                     Driver.WaitForElementToDisappear(LoadingSpinnerSelector);
                 }
 
+                if (!Driver.FindVisibleElements(DepartureTableSelector).Any())
+                {
+                    // Ran to the end of the public timetable
+                    break;
+                }
+
                 var dayDepartures = new List<(DateTime Departure, bool Available)>();
                 foreach (var row in DepartureRows)
                 {

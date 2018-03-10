@@ -22,7 +22,7 @@ namespace LaesoeLineApi.Features.Timetable
         {
             if (Request.GetTypedHeaders().CacheControl?.NoCache != true)
             {
-                var departures = await _cache.GetDeparturesAsync(crossing, date, days, HttpContext.RequestAborted);
+                var departures = await _cache.GetDeparturesAsync(crossing, date, days, false, HttpContext.RequestAborted);
 
                 if (departures != null)
                 {
@@ -32,7 +32,7 @@ namespace LaesoeLineApi.Features.Timetable
 
             await _crawlDeparturesProcessor.SyncDeparturesAsync(crossing, date, days, HttpContext.RequestAborted);
 
-            return Ok(await _cache.GetDeparturesAsync(crossing, date, days, HttpContext.RequestAborted));
+            return Ok(await _cache.GetDeparturesAsync(crossing, date, days, true, HttpContext.RequestAborted));
         }
     }
 }
