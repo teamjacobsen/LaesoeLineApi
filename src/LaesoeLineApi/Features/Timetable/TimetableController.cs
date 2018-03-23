@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using LaesoeLineApi.Features.Timetable.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -18,11 +19,14 @@ namespace LaesoeLineApi.Features.Timetable
         }
 
         [HttpGet("Crossings/{crossing}/Departures")]
-        public async Task<IActionResult> GetDepartures(Crossing crossing, DateTime date, int days = 1)
+        [ProducesResponseType(typeof(DepartureInfo[]), 200)]
+        public async Task<IActionResult> GetDepartures(Crossing crossing, DateTime? date, int? days = 1)
         {
+            date = date ?? LaesoeTime.Now.Date;
+
             if (Request.GetTypedHeaders().CacheControl?.NoCache != true)
             {
-                var departures = await _cache.GetDeparturesAsync(crossing, date, days, false, HttpContext.RequestAborted);
+                var departures = await _cache.GetDeparturesAsync(crossing, date.Value, days.Value, false, HttpContext.RequestAborted);
 
                 if (departures != null)
                 {
@@ -30,9 +34,9 @@ namespace LaesoeLineApi.Features.Timetable
                 }
             }
 
-            await _crawlDeparturesProcessor.SyncDeparturesAsync(crossing, date, days, HttpContext.RequestAborted);
+            await _crawlDeparturesProcessor.SyncDeparturesAsync(crossing, date.Value, days.Value, HttpContext.RequestAborted);
 
-            return Ok(await _cache.GetDeparturesAsync(crossing, date, days, true, HttpContext.RequestAborted));
+            return Ok(await _cache.GetDeparturesAsync(crossing, date.Value, days.Value, true, HttpContext.RequestAborted));
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using LaesoeLineApi.Features.CustomerBooking.Models;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 
 namespace LaesoeLineApi.Features.CustomerBooking.Pages
 {
@@ -13,169 +14,187 @@ namespace LaesoeLineApi.Features.CustomerBooking.Pages
         public string BookingNumber { get; set; }
         public string BookingPassword { get; set; }
 
-        // Booking Details
-        private IWebElement SeasonPassOneWayRadio => Driver.FindVisibleElement(By.Id("cw-bookingflow-ÅRS18ENK"));
-        private IWebElement SeasonPassRoundTripRadio => Driver.FindVisibleElement(By.Id("cw-bookingflow-ÅRSRET18"));
-        private IWebElement SeasonPassLocalOneWayRadio => Driver.FindVisibleElement(By.Id("cw-bookingflow-AAKOE18"));
-        private IWebElement SeasonPassLocalRoundTripRadio => Driver.FindVisibleElement(By.Id("cw-bookingflow-AAKOR18"));
-
-        private static readonly By LoadingSpinnerSelector = By.ClassName("cw-loading-mask-spinner");
-
-        private IWebElement CopyDetailsCheckbox => Driver.FindVisibleElement(By.Name("journeysearch-passengers-copy"));
-
-        private IWebElement OutboundCrossingSelect => Driver.FindVisibleElement(By.Id("j1_route-j1_route"));
-        private const string OutboundDepartureCalendarCssSelector = "input.cw-journeysearch-calendar-1";
-        private IWebElement OutboundPassengersSelect => Driver.FindVisibleElement(By.Id("cw-journeysearch-pax-1-500"));
-        private IWebElement OutboundVehicleSelect => Driver.FindVisibleElement(By.Name("cw_journeysearch_j1_vehicles[0][ctg]"));
-
-        private IWebElement ReturnCrossingSelect => Driver.FindVisibleElement(By.Id("j2_route-j2_route"));
-        private const string ReturnDepartureCalendarCssSelector = "input.cw-journeysearch-calendar-2";
-        private IWebElement ReturnPassengersSelect => Driver.FindVisibleElement(By.Id("cw-journeysearch-pax-2-500"));
-        private IWebElement ReturnVehicleSelect => Driver.FindVisibleElement(By.Name("cw_journeysearch_j2_vehicles[0][ctg]"));
-
-        private IWebElement DetailsNextButton => Driver.FindVisibleElement(By.CssSelector("button.cw-action-next"));
-
-        // Departure Select
-        private static readonly By DepartureTableSelector = By.ClassName("choosejourney-departures");
-        private IWebElement OutboundDepartureRadio(DateTime departure) => Driver.FindVisibleElement(By.CssSelector($"input[name=\"cw_choosejourney_j1_departures\"][data-cw-departure-datetime=\"{departure.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}\"]"));
-        private IWebElement ReturnDepartureRadio(DateTime departure) => Driver.FindVisibleElement(By.CssSelector($"input[name=\"cw_choosejourney_j2_departures\"][data-cw-departure-datetime=\"{departure.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}\"]"));
-        private IWebElement DepartureNextButton => Driver.FindVisibleElement(By.CssSelector("button.cw-action-next"));
-
-        // Contact Information
-        private IWebElement TermsCheckbox => Driver.FindVisibleElement(By.Id("acceptTerms"));
-        private IWebElement ContactNextButton => Driver.FindVisibleElement(By.CssSelector("button.cw-action-next"));
-
-        // Confirmation
-        private static readonly By BookingNumberDivSelector = By.CssSelector("div.cw-booking-code");
-        private IWebElement BookingNumberDiv => Driver.FindVisibleElement(BookingNumberDivSelector);
-        private IWebElement BookingPasswordDiv => Driver.FindVisibleElement(By.ClassName("cw-booking-pwd"));
-
-        private static readonly Dictionary<Vehicle, string> VehicleValues = new Dictionary<Vehicle, string>()
-        {
-            { Vehicle.None, string.Empty },
-            { Vehicle.Car, "319" }
-        };
-
         public BookSeasonPassPage(IWebDriver driver)
         {
             Driver = driver;
         }
 
-        public BookStatus BookOneWay(Journey journey, bool local)
+        public async Task<BookStatus> BookOneWayAsync(Journey journey, bool local)
         {
             // Booking Details
             if (local)
             {
-                SeasonPassLocalOneWayRadio.Click();
+                await Driver.FindVisibleElementAsync(BookingDetails.SeasonPassLocalOneWayRadio).ThenClick();
             }
             else
             {
-                SeasonPassOneWayRadio.Click();
+                await Driver.FindVisibleElementAsync(BookingDetails.SeasonPassOneWayRadio).ThenClick();
             }
 
-            Driver.WaitForElementToDisappear(LoadingSpinnerSelector);
+            await Driver.WaitForElementToDisappearAsync(BookingDetails.LoadingSpinner);
 
-            OutboundCrossingSelect.SelectByIndex((int)journey.Crossing);
-            Driver.SetValueWithScript(OutboundDepartureCalendarCssSelector, journey.Departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
-            OutboundPassengersSelect.SelectByValue(journey.Passengers.ToString());
-            if (!VehicleValues.TryGetValue(journey.Vehicle, out var vehicleValue))
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundCrossingSelect).ThenSelectByIndex((int)journey.Crossing);
+
+            Driver.SetValueWithScript(BookingDetails.OutboundDepartureCalendar, journey.Departure.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundPassengersSelect).ThenSelectByValue(journey.Passengers.ToString());
+
+            var vehicleValue = journey.Vehicle.GetAttribute().SeasonPassOptionValue;
+            if (vehicleValue == null)
             {
                 return BookStatus.VehicleNotFound;
             }
-            OutboundVehicleSelect.SelectByValue(vehicleValue);
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundVehicleSelect).ThenSelectByValue(vehicleValue);
 
-            DetailsNextButton.Click();
+            await Driver.FindVisibleElementAsync(BookingDetails.NextButton).ThenClick();
 
             // Depearture Select
-            Driver.WaitForElementToAppear(DepartureTableSelector);
-            var departureRadio = OutboundDepartureRadio(journey.Departure);
+            await Driver.WaitForElementToAppearAsync(DepartureSelect.DepartureTable);
+            var departureRadio = await Driver.TryFindVisibleElementAsync(DepartureSelect.OutboundDepartureRadio(journey.Departure.Value));
             if (departureRadio == null)
             {
                 return BookStatus.DepartureNotFound;
             }
             departureRadio.Click();
 
-            DepartureNextButton.Click();
+            await Driver.FindVisibleElementAsync(DepartureSelect.NextButton).ThenClick();
 
             // Contact Information
-            TermsCheckbox.Click();
+            await Driver.FindVisibleElementAsync(ContactInformation.TermsCheckbox).ThenClick();
 
-            ContactNextButton.Click();
+            await Driver.FindVisibleElementAsync(ContactInformation.NextButton).ThenClick();
 
             // Confirmation
-            Driver.WaitForElementToAppear(BookingNumberDivSelector);
-            BookingNumber = BookingNumberDiv.Text;
-            BookingPassword = BookingPasswordDiv.Text;
+            var bookingNumberDiv = await Driver.FindVisibleElementAsync(Confirmation.BookingNumberDiv);
+            var bookingPasswordDiv = await Driver.FindVisibleElementAsync(Confirmation.BookingPasswordDiv);
+            BookingNumber = bookingNumberDiv.Text;
+            BookingPassword = bookingPasswordDiv.Text;
 
             return BookStatus.Success;
         }
 
-        public BookStatus BookRoundTrip(Journey outbound, Journey @return, bool local)
+        public async Task<BookStatus> BookRoundTripAsync(Journey outbound, Journey @return, bool local)
         {
             // Booking Details
             if (local)
             {
-                SeasonPassLocalRoundTripRadio.Click();
+                await Driver.FindVisibleElementAsync(BookingDetails.SeasonPassLocalRoundTripRadio).ThenClick();
             }
             else
             {
-                SeasonPassRoundTripRadio.Click();
+                await Driver.FindVisibleElementAsync(BookingDetails.SeasonPassRoundTripRadio).ThenClick();
             }
 
-            Driver.WaitForElementToDisappear(LoadingSpinnerSelector);
+            //await Driver.TryWaitForElementToAppearAsync(BookingDetails.LoadingSpinner, timeout: TimeSpan.FromMilliseconds(100));
+            await Driver.WaitForElementToDisappearAsync(BookingDetails.LoadingSpinner);
 
-            CopyDetailsCheckbox.SetChecked(false);
+            await Driver.FindVisibleElementAsync(BookingDetails.CopyDetailsCheckbox).ThenClick();
 
-            OutboundCrossingSelect.SelectByIndex((int)outbound.Crossing);
-            Driver.SetValueWithScript(OutboundDepartureCalendarCssSelector, outbound.Departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
-            OutboundPassengersSelect.SelectByValue(outbound.Passengers.ToString());
-            if (!VehicleValues.TryGetValue(outbound.Vehicle, out var outboundVehicleValue))
+            // Outbound
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundCrossingSelect).ThenSelectByIndex((int)outbound.Crossing);
+
+            Driver.SetValueWithScript(BookingDetails.OutboundDepartureCalendar, outbound.Departure.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundPassengersSelect).ThenSelectByValue(outbound.Passengers.ToString());
+
+            var outboundVehicleValue = outbound.Vehicle.GetAttribute().SeasonPassOptionValue;
+            if (outboundVehicleValue == null)
             {
                 return BookStatus.VehicleNotFound;
             }
-            OutboundVehicleSelect.SelectByValue(outboundVehicleValue);
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundVehicleSelect).ThenSelectByValue(outboundVehicleValue);
 
-            ReturnCrossingSelect.SelectByIndex((int)@return.Crossing);
-            Driver.SetValueWithScript(ReturnDepartureCalendarCssSelector, @return.Departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
-            ReturnPassengersSelect.SelectByValue(@return.Passengers.ToString());
-            if (!VehicleValues.TryGetValue(@return.Vehicle, out var returnVehicleValue))
+            // Return
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnCrossingSelect).ThenSelectByIndex((int)@return.Crossing);
+
+            Driver.SetValueWithScript(BookingDetails.ReturnDepartureCalendar, @return.Departure.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnPassengersSelect).ThenSelectByValue(@return.Passengers.ToString());
+
+            var returnVehicleValue = @return.Vehicle.GetAttribute().SeasonPassOptionValue;
+            if (returnVehicleValue == null)
             {
                 return BookStatus.VehicleNotFound;
             }
-            ReturnVehicleSelect.SelectByValue(returnVehicleValue);
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnVehicleSelect).ThenSelectByValue(returnVehicleValue);
 
-            DetailsNextButton.Click();
+            await Driver.FindVisibleElementAsync(BookingDetails.NextButton).ThenClick();
 
             // Departure Select
-            Driver.WaitForElementToAppear(DepartureTableSelector);
-            var outboundDepartureRadio = OutboundDepartureRadio(outbound.Departure);
+            await Driver.WaitForElementToAppearAsync(DepartureSelect.DepartureTable);
+            var outboundDepartureRadio = await Driver.TryFindVisibleElementAsync(DepartureSelect.OutboundDepartureRadio(outbound.Departure.Value));
             if (outboundDepartureRadio == null)
             {
                 return BookStatus.OutboundDepartureNotFound;
             }
             outboundDepartureRadio.Click();
 
-            Driver.WaitForElementToAppear(DepartureTableSelector, 2);
-            var returnDepartureRadio = ReturnDepartureRadio(@return.Departure);
+            await Driver.WaitForElementToAppearAsync(DepartureSelect.DepartureTable, 2);
+            var returnDepartureRadio = await Driver.TryFindVisibleElementAsync(DepartureSelect.ReturnDepartureRadio(@return.Departure.Value));
             if (returnDepartureRadio == null)
             {
                 return BookStatus.ReturnDepartureNotFound;
             }
             returnDepartureRadio.Click();
 
-            DepartureNextButton.Click();
+            await Driver.FindVisibleElementAsync(DepartureSelect.NextButton).ThenClick();
 
             // Contact Information
-            TermsCheckbox.Click();
+            await Driver.FindVisibleElementAsync(ContactInformation.TermsCheckbox).ThenClick();
 
-            ContactNextButton.Click();
+            await Driver.FindVisibleElementAsync(ContactInformation.NextButton).ThenClick();
 
             // Confirmation
-            Driver.WaitForElementToAppear(BookingNumberDivSelector);
-            BookingNumber = BookingNumberDiv.Text;
-            BookingPassword = BookingPasswordDiv.Text;
+            var bookingNumberDiv = await Driver.FindVisibleElementAsync(Confirmation.BookingNumberDiv);
+            var bookingPasswordDiv = await Driver.FindVisibleElementAsync(Confirmation.BookingPasswordDiv);
+            BookingNumber = bookingNumberDiv.Text;
+            BookingPassword = bookingPasswordDiv.Text;
 
             return BookStatus.Success;
+        }
+
+        private static class BookingDetails
+        {
+            public static readonly By SeasonPassOneWayRadio = By.Id("cw-bookingflow-ÅRS18ENK");
+            public static readonly By SeasonPassRoundTripRadio = By.Id("cw-bookingflow-ÅRSRET18");
+            public static readonly By SeasonPassLocalOneWayRadio = By.Id("cw-bookingflow-AAKOE18");
+            public static readonly By SeasonPassLocalRoundTripRadio = By.Id("cw-bookingflow-AAKOR18");
+
+            public static readonly By LoadingSpinner = By.ClassName("cw-loading-mask-spinner");
+
+            public static readonly By CopyDetailsCheckbox = By.Name("journeysearch-passengers-copy");
+
+            public static readonly By OutboundCrossingSelect = By.Id("j1_route-j1_route");
+            public const string OutboundDepartureCalendar = "input.cw-journeysearch-calendar-1";
+            public static readonly By OutboundPassengersSelect = By.Id("cw-journeysearch-pax-1-500");
+            public static readonly By OutboundVehicleSelect = By.Name("cw_journeysearch_j1_vehicles[0][ctg]");
+
+            public static readonly By ReturnCrossingSelect = By.Id("j2_route-j2_route");
+            public const string ReturnDepartureCalendar = "input.cw-journeysearch-calendar-2";
+            public static readonly By ReturnPassengersSelect = By.Id("cw-journeysearch-pax-2-500");
+            public static readonly By ReturnVehicleSelect = By.Name("cw_journeysearch_j2_vehicles[0][ctg]");
+
+            public static readonly By NextButton = By.CssSelector("button.cw-action-next");
+        }
+
+        private static class DepartureSelect
+        {
+            public static readonly By DepartureTable = By.ClassName("choosejourney-departures");
+            public static By OutboundDepartureRadio(DateTime departure) => By.CssSelector($"input[name=\"cw_choosejourney_j1_departures\"][data-cw-departure-datetime=\"{departure.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}\"]");
+            public static By ReturnDepartureRadio(DateTime departure) => By.CssSelector($"input[name=\"cw_choosejourney_j2_departures\"][data-cw-departure-datetime=\"{departure.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}\"]");
+            public static readonly By NextButton = By.CssSelector("button.cw-action-next");
+        }
+
+        private static class ContactInformation
+        {
+            public static readonly By TermsCheckbox = By.Id("acceptTerms");
+            public static readonly By NextButton = By.CssSelector("button.cw-action-next");
+        }
+
+        private static class Confirmation
+        {
+            public static readonly By BookingNumberDiv = By.CssSelector("div.cw-booking-code");
+            public static readonly By BookingPasswordDiv = By.ClassName("cw-booking-pwd");
         }
     }
 }

@@ -6,18 +6,20 @@ using System.Linq;
 
 namespace LaesoeLineApi.Converters
 {
-    public class CamelCaseEnumDictionaryKeyConverter : JsonConverter
+    public class VehicleDictionaryKeyConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
         {
-            if (!objectType.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IDictionary<,>)))
+            var dictionaryInterface = objectType.GetInterfaces().SingleOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IDictionary<,>));
+
+            if (dictionaryInterface == null)
             {
                 return false;
             }
 
-            var TKey = objectType.GetGenericArguments()[0];
+            var TKey = dictionaryInterface.GetGenericArguments()[0];
 
-            return TKey.IsEnum;
+            return TKey == typeof(Vehicle);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -34,7 +36,9 @@ namespace LaesoeLineApi.Converters
 
             foreach (var key in dictionary.Keys)
             {
-                writer.WritePropertyName(ToCamelCase(key.ToString()));
+                var vehicle = (Vehicle)key;
+
+                writer.WritePropertyName(vehicle.GetAttribute().Value ?? vehicle.ToString());
                 writer.WriteValue(dictionary[key]);
             }
 
@@ -44,20 +48,6 @@ namespace LaesoeLineApi.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             throw new NotImplementedException();
-        }
-
-        private static string ToCamelCase(string s)
-        {
-            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
-            {
-                return s;
-            }
-
-            var chars = s.ToCharArray();
-
-            chars[0] = char.ToLowerInvariant(chars[0]);
-
-            return new string(chars);
         }
     }
 }

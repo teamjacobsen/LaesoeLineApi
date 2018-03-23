@@ -1,5 +1,6 @@
 ﻿using LaesoeLineApi.Features.Timetable.Models;
 using LaesoeLineApi.Features.Timetable.Pages;
+using LaesoeLineApi.Selenium;
 using Microsoft.Extensions.DependencyInjection;
 using OpenQA.Selenium;
 using System;
@@ -12,38 +13,39 @@ namespace LaesoeLineApi.Features.Timetable
 {
     public class CrawlDeparturesProcessor
     {
-        private readonly IServiceProvider _services;
+        private readonly IWebDriverFactory _webDriverFactory;
         private readonly DepartureCache _cache;
 
-        public CrawlDeparturesProcessor(IServiceProvider services, DepartureCache cache)
+        public CrawlDeparturesProcessor(IWebDriverFactory webDriverFactory, DepartureCache cache)
         {
-            _services = services;
+            _webDriverFactory = webDriverFactory;
             _cache = cache;
         }
 
-        public Task SyncDeparturesAsync(Crossing crossing, DateTime date, int days, CancellationToken cancellationToken = default)
+        public async Task SyncDeparturesAsync(Crossing crossing, DateTime date, int days, CancellationToken cancellationToken = default)
         {
             var vehicleResults = new Dictionary<DateTime, DepartureInfo[]>();
 
-            var vehicles = ((Vehicle[])Enum.GetValues(typeof(Vehicle))).Where(x => x != Vehicle.None);
-            Parallel.ForEach(vehicles, vehicle =>
+            var vehicles = ((Vehicle[])Enum.GetValues(typeof(Vehicle))).Where(x => x.GetAttribute().IncludeInAvailability);
+
+            await Task.WhenAll(vehicles.Select(async vehicle =>
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                using (var driver = _services.GetRequiredService<IWebDriver>())
+                using (var driver = await _webDriverFactory.CreateAsync())
                 {
-                    var bookPage = driver.GoTo<BookPage>();
+                    var bookPage = await driver.GoToAsync<BookPage>();
 
-                    var departures = bookPage.GetDepartures(crossing, vehicle, date, days);
+                    var departures = await bookPage.GetDeparturesAsync(crossing, vehicle, date, days);
 
                     lock (vehicleResults)
                     {
                         PatchAvailability(vehicleResults, vehicle, departures);
                     }
                 }
-            });
+            }));
 
-            return Task.WhenAll(vehicleResults.Select(x => _cache.SetDeparturesAsync(crossing, x.Key, x.Value, cancellationToken)));
+            await Task.WhenAll(vehicleResults.Select(x => _cache.SetDeparturesAsync(crossing, x.Key, x.Value, cancellationToken)));
         }
 
         private void PatchAvailability(IDictionary<DateTime, DepartureInfo[]> master, Vehicle vehicle, IDictionary<DateTime, (DateTime Departure, bool IsAvailable)[]> patch)

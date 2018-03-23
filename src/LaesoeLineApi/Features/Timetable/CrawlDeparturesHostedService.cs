@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,31 +10,49 @@ namespace LaesoeLineApi.Features.Timetable
     {
         private readonly CrawlDeparturesProcessor _processor;
         private readonly IOptions<TimetableOptions> _options;
-        private static readonly TimeZoneInfo EuropeCopenhagen = TimeZoneInfo.FindSystemTimeZoneById("Romance Standard Time");
+        private readonly ILogger<CrawlDeparturesHostedService> _logger;
 
-        public CrawlDeparturesHostedService(CrawlDeparturesProcessor processor, IOptions<TimetableOptions> options)
+        public CrawlDeparturesHostedService(CrawlDeparturesProcessor processor, IOptions<TimetableOptions> options, ILogger<CrawlDeparturesHostedService> logger)
         {
             _processor = processor;
             _options = options;
+            _logger = logger;
         }
 
-        //  Runs when webserver starts
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
+            var crossings = (Crossing[])Enum.GetValues(typeof(Crossing));
+
             var isFirstRun = true;
             while (!cancellationToken.IsCancellationRequested)
             {
-                var now = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, EuropeCopenhagen);
+                var now = LaesoeTime.Now;
+                var nowDate = now.Date;
 
                 int days = GetDays(now, isFirstRun);
                 isFirstRun = false;
 
-                foreach (var crossing in (Crossing[])Enum.GetValues(typeof(Crossing)))
+                try
                 {
-                    await _processor.SyncDeparturesAsync(crossing, now.Date, days, cancellationToken);
+                    foreach (var crossing in crossings)
+                    {
+                        await _processor.SyncDeparturesAsync(crossing, nowDate, days, cancellationToken);
+
+                        _logger.LogInformation("Successfully synchronized departures for {Crossing} from {Date} for {Days} days", crossing, nowDate, days);
+                    }
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Departure synchronization failed from {Date} for {Days} days", nowDate, days);
                 }
 
-                await Task.Delay(TimeSpan.FromHours(1), cancellationToken);
+                try
+                {
+                    await Task.Delay(TimeSpan.FromHours(1), cancellationToken);
+                }
+                catch (TaskCanceledException)
+                {
+                }
             }
         }
 

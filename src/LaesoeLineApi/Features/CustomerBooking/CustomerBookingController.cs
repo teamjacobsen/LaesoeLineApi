@@ -1,24 +1,30 @@
 ﻿using LaesoeLineApi.Features.CustomerBooking.Models;
 using LaesoeLineApi.Features.CustomerBooking.Pages;
+using LaesoeLineApi.Selenium;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OpenQA.Selenium;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace LaesoeLineApi.Features.CustomerBooking
 {
+    [Authorize]
     [Route("[controller]")]
     public class CustomerBookingController : ControllerBase
     {
-        private readonly IWebDriver _webDriver;
+        private readonly IWebDriverFactory _webDriverFactory;
 
-        public CustomerBookingController(IWebDriver webDriver)
+        public CustomerBookingController(IWebDriverFactory webDriverFactory)
         {
-            _webDriver = webDriver;
+            _webDriverFactory = webDriverFactory;
         }
 
         [HttpPost("Book/SeasonPass/OneWay")]
+        [ProducesResponseType(typeof(BookSuccessResult), 200)]
+        [ProducesResponseType(typeof(BookErrorResult), 422)]
         public async Task<IActionResult> BookSeasonPassOneWay([Required] [FromBody] BookOneWay command)
         {
             if (!ModelState.IsValid)
@@ -26,38 +32,33 @@ namespace LaesoeLineApi.Features.CustomerBooking
                 return BadRequest(ModelState);
             }
 
-            var credentials = Request.GetCredentials();
-
-            if (credentials == null)
+            using (var driver = await _webDriverFactory.CreateAsync())
             {
-                return Unauthorized();
-            }
+                var customerProfilePage = await driver.GoToAsync<CustomerProfilePage>();
+                await customerProfilePage.LoginAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value, User.FindFirst(ClaimTypes.Authentication).Value);
 
-            var bookResult = new BookResult();
-            var status = await Task.Factory.StartNew(() =>
-            {
-                var customerProfilePage = _webDriver.GoTo<CustomerProfilePage>();
-                customerProfilePage.Login(credentials.Username, credentials.Password);
+                var bookSeasonPassPage = await driver.GoToAsync<BookSeasonPassPage>();
+                var status = await bookSeasonPassPage.BookOneWayAsync(command.Journey, command.Local);
+                var bookResult = new BookSuccessResult
+                {
+                    BookingNumber = bookSeasonPassPage.BookingNumber,
+                    BookingPassword = bookSeasonPassPage.BookingPassword
+                };
 
-                var bookSeasonPassPage = _webDriver.GoTo<BookSeasonPassPage>();
-                var result = bookSeasonPassPage.BookOneWay(command.Journey, command.Local);
-                bookResult.BookingNumber = bookSeasonPassPage.BookingNumber;
-                bookResult.BookingPassword = bookSeasonPassPage.BookingPassword;
-
-                return result;
-            });
-
-            if (status == BookStatus.Success)
-            {
-                return Ok(bookResult);
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status422UnprocessableEntity, status);
+                if (status == BookStatus.Success)
+                {
+                    return Ok(bookResult);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status422UnprocessableEntity, new BookErrorResult(status));
+                }
             }
         }
 
         [HttpPost("Book/SeasonPass/RoundTrip")]
+        [ProducesResponseType(typeof(BookSuccessResult), 200)]
+        [ProducesResponseType(typeof(BookErrorResult), 422)]
         public async Task<IActionResult> BookSeasonPassRoundTrip([Required] [FromBody] BookRoundTrip command)
         {
             if (!ModelState.IsValid)
@@ -65,62 +66,49 @@ namespace LaesoeLineApi.Features.CustomerBooking
                 return BadRequest(ModelState);
             }
 
-            var credentials = Request.GetCredentials();
-
-            if (credentials == null)
+            using (var driver = await _webDriverFactory.CreateAsync())
             {
-                return Unauthorized();
-            }
+                var customerProfilePage = await driver.GoToAsync<CustomerProfilePage>();
+                await customerProfilePage.LoginAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value, User.FindFirst(ClaimTypes.Authentication).Value);
 
-            var bookResult = new BookResult();
-            var status = await Task.Factory.StartNew(() =>
-            {
-                var customerProfilePage = _webDriver.GoTo<CustomerProfilePage>();
-                customerProfilePage.Login(credentials.Username, credentials.Password);
+                var bookSeasonPassPage = await driver.GoToAsync<BookSeasonPassPage>();
+                var status = await bookSeasonPassPage.BookRoundTripAsync(command.Outbound, command.Return, command.Local);
+                var bookResult = new BookSuccessResult
+                {
+                    BookingNumber = bookSeasonPassPage.BookingNumber,
+                    BookingPassword = bookSeasonPassPage.BookingPassword
+                };
 
-                var bookSeasonPassPage = _webDriver.GoTo<BookSeasonPassPage>();
-                var result = bookSeasonPassPage.BookRoundTrip(command.Outbound, command.Return, command.Local);
-                bookResult.BookingNumber = bookSeasonPassPage.BookingNumber;
-                bookResult.BookingPassword = bookSeasonPassPage.BookingPassword;
-
-                return result;
-            });
-
-            if (status == BookStatus.Success)
-            {
-                return Ok(bookResult);
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status422UnprocessableEntity, status);
+                if (status == BookStatus.Success)
+                {
+                    return Ok(bookResult);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status422UnprocessableEntity, new BookErrorResult(status));
+                }
             }
         }
 
         [HttpDelete("Bookings/{bookingNumber}")]
+        [ProducesResponseType(204)]
         public async Task<IActionResult> Cancel(string bookingNumber)
         {
-            var credentials = Request.GetCredentials();
-
-            if (credentials == null)
+            using (var driver = await _webDriverFactory.CreateAsync())
             {
-                return Unauthorized();
+                var customerProfilePage = await driver.GoToAsync<CustomerProfilePage>();
+
+                await customerProfilePage.LoginAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value, User.FindFirst(ClaimTypes.Authentication).Value);
+
+                var found = await customerProfilePage.CancelAsync(bookingNumber);
+
+                if (!found)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
             }
-
-            var found = await Task.Factory.StartNew(() =>
-            {
-                var customerProfilePage = _webDriver.GoTo<CustomerProfilePage>();
-
-                customerProfilePage.Login(credentials.Username, credentials.Password);
-
-                return customerProfilePage.Cancel(bookingNumber);
-            });
-
-            if (!found)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
         }
     }
 }

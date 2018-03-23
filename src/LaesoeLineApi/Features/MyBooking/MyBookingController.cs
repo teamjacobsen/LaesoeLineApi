@@ -1,6 +1,8 @@
 ﻿using LaesoeLineApi.Features.MyBooking.Pages;
+using LaesoeLineApi.Selenium;
 using Microsoft.AspNetCore.Mvc;
 using OpenQA.Selenium;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace LaesoeLineApi.Features.MyBooking
@@ -8,26 +10,27 @@ namespace LaesoeLineApi.Features.MyBooking
     [Route("[controller]")]
     public class MyBookingController : ControllerBase
     {
-        private readonly IWebDriver _webDriver;
+        private readonly IWebDriverFactory _webDriverFactory;
 
-        public MyBookingController(IWebDriver webDriver)
+        public MyBookingController(IWebDriverFactory webDriverFactory)
         {
-            _webDriver = webDriver;
+            _webDriverFactory = webDriverFactory;
         }
 
         [HttpDelete("Bookings/{bookingNumber}")]
-        public async Task<IActionResult> Cancel(string bookingNumber, string bookingPassword)
+        [ProducesResponseType(204)]
+        public async Task<IActionResult> Cancel(string bookingNumber, [Required] string bookingPassword)
         {
-            await Task.Factory.StartNew(() =>
+            using (var driver = await _webDriverFactory.CreateAsync())
             {
-                var myBookingPage = _webDriver.GoTo<MyBookingPage>();
-                myBookingPage.Login(bookingNumber, bookingPassword);
+                var myBookingPage = await driver.GoToAsync<MyBookingPage>();
+                await myBookingPage.LoginAsync(bookingNumber, bookingPassword);
 
-                var bookingConfirmationPage = _webDriver.GoTo<BookingConfirmationPage>();
-                bookingConfirmationPage.Cancel();
-            });
+                var bookingConfirmationPage = await driver.GoToAsync<BookingConfirmationPage>();
+                await bookingConfirmationPage.CancelAsync();
 
-            return NoContent();
+                return NoContent();
+            }
         }
     }
 }

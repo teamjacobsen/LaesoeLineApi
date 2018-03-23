@@ -1,9 +1,9 @@
 ﻿namespace LaesoeLineApi.Features.AgentBooking.Models
 {
-    public class BookResult
+    public class BookSuccessResult
     {
         public string BookingNumber { get; set; }
         public string BookingPassword { get; set; }
-        public decimal Price { get; set; }
+        public decimal TotalPrice { get; set; }
     }
 }

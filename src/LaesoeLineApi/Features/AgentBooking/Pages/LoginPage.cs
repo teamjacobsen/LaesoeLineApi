@@ -1,4 +1,5 @@
 ﻿using OpenQA.Selenium;
+using System.Threading.Tasks;
 
 namespace LaesoeLineApi.Features.AgentBooking.Pages
 {
@@ -7,24 +8,20 @@ namespace LaesoeLineApi.Features.AgentBooking.Pages
         public string Url { get; } = "https://booking.laesoe-line.dk/dk/book/it/customerLogin/";
         public IWebDriver Driver { get; private set; }
 
-        private static readonly By UsernameSelector = By.Id("username");
-        private IWebElement Username => Driver.FindVisibleElement(UsernameSelector);
-        private IWebElement Password => Driver.FindVisibleElement(By.Id("password"));
-        private IWebElement Submit => Driver.FindVisibleElement(By.CssSelector("button[type=submit]"));
+        private static readonly By UsernameText = By.Id("username");
+        private static readonly By PasswordText = By.Id("password");
+        private static readonly By SubmitButton = By.CssSelector("button[type=submit]");
 
         public LoginPage(IWebDriver driver)
         {
             Driver = driver;
         }
 
-        public void Login(string username, string password)
+        public async Task LoginAsync(string username, string password)
         {
-            // Wait for login to show
-            Driver.WaitForElementToAppear(UsernameSelector);
-
-            Username.SendKeys(username);
-            Password.SendKeys(password);
-            Submit.Click();
+            await Driver.FindVisibleElementAsync(UsernameText).ThenSendKeys(username);
+            await Driver.FindVisibleElementAsync(PasswordText).ThenSendKeys(password);
+            await Driver.FindVisibleElementAsync(SubmitButton).ThenClick();
         }
     }
 }

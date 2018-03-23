@@ -37,9 +37,10 @@ namespace LaesoeLineApi.Features.Timetable
 
             var entries = hits.Where(x => x != null).Select(json => JsonConvert.DeserializeObject<Entry>(json)).OrderBy(x => x.Date);
 
-            var departures = entries.SelectMany(x => x.Departures).ToArray();
+            var departures = entries.SelectMany(x => x.Departures).OrderBy(x => x.Departure).ToArray();
 
-            var expectedNumberOfVehicles = Enum.GetValues(typeof(Vehicle)).Length - 1; // Do not include the None value
+            var vehicles = (Vehicle[])Enum.GetValues(typeof(Vehicle));
+            var expectedNumberOfVehicles = vehicles.Count(x => x.GetAttribute().IncludeInAvailability);
             if (departures.Any(x => x.Availability.Count != expectedNumberOfVehicles))
             {
                 return null;

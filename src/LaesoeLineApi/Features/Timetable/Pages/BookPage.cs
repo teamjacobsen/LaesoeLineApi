@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LaesoeLineApi.Features.Timetable.Pages
 {
@@ -11,74 +12,59 @@ namespace LaesoeLineApi.Features.Timetable.Pages
         public string Url { get; } = "https://booking.laesoe-line.dk/dk/book/obo-2018/Rejsedetaljer/";
         public IWebDriver Driver { get; private set; }
 
-        private static readonly By LoadingSpinnerSelector = By.ClassName("cw-loading-mask-spinner");
-
-        // Booking Details
-        private IWebElement LocalVehicleOneWayRadio => Driver.FindVisibleElement(By.Id("cw-bookingflow-OBO18ENK"));
-
-        private IWebElement CrossingSelect => Driver.FindVisibleElement(By.Id("j1_route-j1_route"));
-        private const string DepartureCalendarCssSelector = "input.cw-journeysearch-calendar-1";
-        private IWebElement PassengersSelect => Driver.FindVisibleElement(By.Id("cw-journeysearch-pax-1-500"));
-        private IWebElement VehicleSelect => Driver.FindVisibleElement(By.Name("cw_journeysearch_j1_vehicles[0][ctg]"));
-
-        private IWebElement DetailsNextButton => Driver.FindVisibleElement(By.CssSelector("button.cw-action-next"));
-
-        // Departure Select
-        private static readonly By DepartureTableSelector = By.ClassName("choosejourney-departures");
-        private IEnumerable<IWebElement> DepartureRows => Driver.FindVisibleElements(By.ClassName("cw-choosejourney-row-day"));
-
-        private IWebElement LaterDeparturesLink => Driver.FindVisibleElement(By.CssSelector("span[data-cw-action=\"laterDepartures\"]"));
-
-        private static readonly Dictionary<Vehicle, string> VehicleValues = new Dictionary<Vehicle, string>()
-        {
-            { Vehicle.None, string.Empty },
-            { Vehicle.Car, "19" },
-            { Vehicle.Van, "21" }
-        };
-
         public BookPage(IWebDriver driver)
         {
             Driver = driver;
         }
 
-        public IDictionary<DateTime, (DateTime Departure, bool IsAvailable)[]> GetDepartures(Crossing crossing, Vehicle vehicle, DateTime date, int days)
+        public async Task<IDictionary<DateTime, (DateTime Departure, bool IsAvailable)[]>> GetDeparturesAsync(Crossing crossing, Vehicle vehicle, DateTime date, int days)
         {
             var result = new Dictionary<DateTime, (DateTime Departure, bool Available)[]>();
 
             // Booking Details
-            LocalVehicleOneWayRadio.Click();
+            await Driver.FindVisibleElementAsync(BookingDetails.LocalVehicleOneWayRadio).ThenClick();
 
-            Driver.WaitForElementToDisappear(LoadingSpinnerSelector);
+            //await Driver.TryWaitForElementToAppearAsync(LoadingSpinner, timeout: TimeSpan.FromMilliseconds(100));
+            await Driver.WaitForElementToDisappearAsync(LoadingSpinner);
 
-            CrossingSelect.SelectByIndex((int)crossing);
-            Driver.SetValueWithScript(DepartureCalendarCssSelector, date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
-            PassengersSelect.SelectByValue("1");
-            if (!VehicleValues.TryGetValue(vehicle, out var vehicleValue))
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.CrossingSelect).ThenSelectByIndex((int)crossing);
+
+            Driver.SetValueWithScript(BookingDetails.DepartureCalendar, date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.PassengersSelect).ThenSelectByValue("1");
+
+            var vehicleValue = vehicle.GetAttribute().OptionValue;
+            if (vehicleValue == null)
             {
                 return null;
             }
-            VehicleSelect.SelectByValue(vehicleValue);
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.VehicleSelect).ThenSelectByValue(vehicleValue);
 
-            DetailsNextButton.Click();
+            await Driver.FindVisibleElementAsync(BookingDetails.NextButton).ThenClick();
 
             // Depearture Select
-            Driver.WaitForElementToAppear(DepartureTableSelector);
+            await Driver.WaitForElementToAppearAsync(DepartureSelect.DepartureTable);
+
             foreach (var day in Enumerable.Range(0, days).Select(x => date.AddDays(x)))
             {
                 if (day != date)
                 {
-                    LaterDeparturesLink.Click();
-                    Driver.WaitForElementToDisappear(LoadingSpinnerSelector);
+                    await Driver.FindVisibleElementAsync(DepartureSelect.LaterDeparturesLink).ThenClick();
+
+                    //await Driver.TryWaitForElementToAppearAsync(LoadingSpinner, timeout: TimeSpan.FromMilliseconds(100));
+                    await Driver.WaitForElementToDisappearAsync(LoadingSpinner);
                 }
 
-                if (!Driver.FindVisibleElements(DepartureTableSelector).Any())
+                var departureTables = Driver.FindElements(DepartureSelect.DepartureTable).Where(x => x.Displayed);
+
+                if (!departureTables.Any())
                 {
                     // Ran to the end of the public timetable
                     break;
                 }
 
                 var dayDepartures = new List<(DateTime Departure, bool Available)>();
-                foreach (var row in DepartureRows)
+                foreach (var row in Driver.FindElements(DepartureSelect.DepartureRows).Where(x => x.Displayed))
                 {
                     var timeString = row.FindElement(By.ClassName("departs")).Text.Trim();
                     var time = TimeSpan.ParseExact(timeString, @"hh\.mm", CultureInfo.InvariantCulture);
@@ -92,6 +78,27 @@ namespace LaesoeLineApi.Features.Timetable.Pages
             }
 
             return result;
+        }
+
+        private static readonly By LoadingSpinner = By.ClassName("cw-loading-mask-spinner");
+
+        // Booking Details
+        private static class BookingDetails
+        {
+            public static readonly By LocalVehicleOneWayRadio = By.Id("cw-bookingflow-OBO18ENK");
+            public static readonly By CrossingSelect = By.Id("j1_route-j1_route");
+            public static readonly string DepartureCalendar = "input.cw-journeysearch-calendar-1";
+            public static readonly By PassengersSelect = By.Id("cw-journeysearch-pax-1-500");
+            public static readonly By VehicleSelect = By.Name("cw_journeysearch_j1_vehicles[0][ctg]");
+            public static readonly By NextButton = By.CssSelector("button.cw-action-next");
+        }
+
+        // Departure Select
+        private static class DepartureSelect
+        {
+            public static readonly By DepartureTable = By.ClassName("choosejourney-departures");
+            public static readonly By DepartureRows = By.ClassName("cw-choosejourney-row-day");
+            public static readonly By LaterDeparturesLink = By.CssSelector("span[data-cw-action=\"laterDepartures\"]");
         }
     }
 }

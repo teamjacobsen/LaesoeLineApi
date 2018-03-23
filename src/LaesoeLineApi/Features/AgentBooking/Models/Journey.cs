@@ -10,17 +10,22 @@ namespace LaesoeLineApi.Features.AgentBooking.Models
         public Crossing? Crossing { get; set; }
 
         [Required]
-        public DateTime Departure { get; set; }
+        public DateTime? Departure { get; set; }
 
-        public int Seniors { get; set; }
+        [Range(0, 9)]
+        public int? Seniors { get; set; }
 
-        public int Adults { get; set; }
+        [Range(0, 9)]
+        public int? Adults { get; set; }
 
-        public int Children { get; set; }
+        [Range(0, 9)]
+        public int? Children { get; set; }
 
-        public int Infants { get; set; }
+        [Range(0, 9)]
+        public int? Infants { get; set; }
 
-        public int VehiclePassengers { get; set; }
+        [Range(0, 9)]
+        public int? VehiclePassengers { get; set; }
 
         public Vehicle Vehicle { get; set; } = Vehicle.None;
 
@@ -30,7 +35,7 @@ namespace LaesoeLineApi.Features.AgentBooking.Models
             {
                 if (Seniors + Adults + Children + Infants == 0)
                 {
-                    yield return new ValidationResult("At least one passenger is required when there is not vehicle");
+                    yield return new ValidationResult("At least one passenger is required when no vehicle is specified");
                 }
 
                 if (VehiclePassengers > 0)
