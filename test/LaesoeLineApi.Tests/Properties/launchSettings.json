@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "LaesoeLineApi.Tests": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "CONSUMER_PASSWORD": "as157d",
+        "CONSUMER_USERNAME": "25542"
+      }
+    }
+  }
+}

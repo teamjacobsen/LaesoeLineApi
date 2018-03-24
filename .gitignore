@@ -4,3 +4,5 @@
 src/*/bin
 src/*/obj
 src/LaesoeLineApi/Properties/PublishProfiles/Default Settings.pubxml
+test/*/bin
+test/*/obj

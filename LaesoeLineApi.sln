@@ -11,6 +11,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "idunno.Authentication", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaesoeLineApi.Client", "src\LaesoeLineApi.Client\LaesoeLineApi.Client.csproj", "{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaesoeLineApi.Tests", "test\LaesoeLineApi.Tests\LaesoeLineApi.Tests.csproj", "{F7604CF8-0149-4F60-9357-2710FECAB77C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7604CF8-0149-4F60-9357-2710FECAB77C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7604CF8-0149-4F60-9357-2710FECAB77C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7604CF8-0149-4F60-9357-2710FECAB77C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7604CF8-0149-4F60-9357-2710FECAB77C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
