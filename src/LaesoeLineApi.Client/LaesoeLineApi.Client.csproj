@@ -1,13 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
+    <RootNamespace>LaesoeLineApi</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LaesoeLineApi.Client\LaesoeLineApi.Client.csproj" />
+    <PackageReference Include="Refit" Version="4.3.0" />
   </ItemGroup>
 
 </Project>

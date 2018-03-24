@@ -5,9 +5,11 @@ VisualStudioVersion = 15.0.27428.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaesoeLineApi", "src\LaesoeLineApi\LaesoeLineApi.csproj", "{D8BDFC6F-E937-4A18-BD99-B86806B78A22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExampleClient", "src\ExampleClient\ExampleClient.csproj", "{4BAB4D43-4E8C-4D50-8A51-244F4F8C035D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleClient", "src\ExampleClient\ExampleClient.csproj", "{4BAB4D43-4E8C-4D50-8A51-244F4F8C035D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "idunno.Authentication", "src\idunno.Authentication\idunno.Authentication.csproj", "{B4538AB9-CFD9-401C-AC27-7635E8AD903B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaesoeLineApi.Client", "src\LaesoeLineApi.Client\LaesoeLineApi.Client.csproj", "{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{B4538AB9-CFD9-401C-AC27-7635E8AD903B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4538AB9-CFD9-401C-AC27-7635E8AD903B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4538AB9-CFD9-401C-AC27-7635E8AD903B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

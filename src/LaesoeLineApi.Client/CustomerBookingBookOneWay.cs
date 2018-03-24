@@ -1,4 +1,4 @@
-﻿namespace ExampleClient.Api
+﻿namespace LaesoeLineApi
 {
     public class CustomerBookingBookOneWay
     {

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace ExampleClient.Api
+namespace LaesoeLineApi
 {
     public interface ITimetableApi
     {

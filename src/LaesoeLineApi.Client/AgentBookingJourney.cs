@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ExampleClient.Api
+namespace LaesoeLineApi
 {
     public class AgentBookingJourney
     {

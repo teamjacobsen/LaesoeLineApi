@@ -1,7 +1,5 @@
-﻿using ExampleClient.Api;
+﻿using LaesoeLineApi;
 using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,14 +9,9 @@ namespace ExampleClient
     {
         public static async Task Main(string[] args)
         {
-            var client = new HttpClient
-            {
-                BaseAddress = new Uri("http://localhost:51059/", UriKind.Absolute)
-            };
+            var api = new LaesoeLineApiClient("http://localhost:51059/");
+            api.SetAuthorization(args[0], args[1]);
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{args[0]}:{args[1]}")));
-
-            var api = new LaesoeLineApi(client);
             var departures = await api.Timetable.GetDepartures(Crossing.LaesoeFrederikshavn, days: 3);
 
             foreach (var departure in departures)
@@ -38,8 +31,27 @@ namespace ExampleClient
             });
 
             await api.CustomerBooking.CancelAsync(booking.BookingNumber);
+        }
 
-            Console.ReadLine();
+        private static string FormatDeparture(DepartureInfo departureInfo)
+        {
+            var builder = new StringBuilder();
+
+            builder.AppendFormat("{0} {1}: ", departureInfo.Departure.ToShortDateString(), departureInfo.Departure.ToShortTimeString());
+
+            foreach (var availability in departureInfo.Availability)
+            {
+                if (availability.Value)
+                {
+                    builder.AppendFormat("\t{0} (available)", availability.Key);
+                }
+                else
+                {
+                    builder.AppendFormat("\t{0} (sold out)", availability.Key);
+                }
+            }
+
+            return builder.ToString();
         }
     }
 }

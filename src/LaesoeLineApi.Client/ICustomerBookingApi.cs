@@ -1,7 +1,7 @@
 ﻿using Refit;
 using System.Threading.Tasks;
 
-namespace ExampleClient.Api
+namespace LaesoeLineApi
 {
     public interface ICustomerBookingApi
     {
