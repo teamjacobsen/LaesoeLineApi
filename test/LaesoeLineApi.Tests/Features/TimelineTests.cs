@@ -20,7 +20,7 @@ namespace LaesoeLineApi.Tests.Features
             var date = DateTime.UtcNow.AddDays(20).Date;
 
             // When
-            var departures = await _fixture.Api.Timetable.GetDepartures(Crossing.LaesoeFrederikshavn, date, 3);
+            var departures = await _fixture.Api.Timetable.GetDeparturesAsync(Crossing.LaesoeFrederikshavn, date, 4);
 
             // Then
             Assert.Contains(departures, x => x.Departure == new DateTime(date.Year, date.Month, date.Day, 6, 0, 0));

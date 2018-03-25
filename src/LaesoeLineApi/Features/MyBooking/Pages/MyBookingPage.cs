@@ -12,6 +12,8 @@ namespace LaesoeLineApi.Features.MyBooking.Pages
         private static readonly By BookingPasswordText = By.Id("cw-login-booking-password");
         private static readonly By SubmitButton = By.CssSelector("button[type=submit]");
 
+        private static readonly By BookingNumberDiv = By.ClassName("cw-booking-code");
+
         public MyBookingPage(IWebDriver driver)
         {
             Driver = driver;
@@ -22,6 +24,8 @@ namespace LaesoeLineApi.Features.MyBooking.Pages
             await Driver.FindVisibleElementAsync(BookingNumberText).ThenSendKeys(bookingNumber);
             await Driver.FindVisibleElementAsync(BookingPasswordText).ThenSendKeys(bookingPassword);
             await Driver.FindVisibleElementAsync(SubmitButton).ThenClick();
+
+            await Driver.WaitForElementToAppearAsync(BookingNumberDiv);
         }
     }
 }

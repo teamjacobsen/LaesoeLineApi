@@ -12,14 +12,14 @@ namespace ExampleClient
             var api = new LaesoeLineApiClient("http://localhost:51059/");
             api.SetAuthorization(args[0], args[1]);
 
-            var departures = await api.Timetable.GetDepartures(Crossing.LaesoeFrederikshavn, days: 3);
+            var departures = await api.Timetable.GetDeparturesAsync(Crossing.LaesoeFrederikshavn, days: 3);
 
             foreach (var departure in departures)
             {
-                Console.WriteLine(departure);
+                Console.WriteLine(FormatDeparture(departure));
             }
 
-            var booking = await api.CustomerBooking.BookSeasonPassOneWay(new CustomerBookingBookOneWay()
+            var booking = await api.CustomerBooking.BookSeasonPassOneWayAsync(new CustomerBookingBookOneWay()
             {
                 Journey = new CustomerBookingJourney()
                 {

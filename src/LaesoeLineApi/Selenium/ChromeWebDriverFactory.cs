@@ -9,24 +9,18 @@ namespace LaesoeLineApi.Selenium
 {
     public class ChromeWebDriverFactory : IWebDriverFactory
     {
-        private readonly ChromeDriverService _driverService;
+        private readonly ChromeDriverServicePool _driverServicePool;
         private readonly IOptions<ChromeSeleniumOptions> _options;
 
-        public ChromeWebDriverFactory(ChromeDriverService driverService, IOptions<ChromeSeleniumOptions> options)
+        public ChromeWebDriverFactory(ChromeDriverServicePool driverServicePool, IOptions<ChromeSeleniumOptions> options)
         {
-            _driverService = driverService;
+            _driverServicePool = driverServicePool;
             _options = options;
         }
 
         public async Task<IWebDriver> CreateAsync()
         {
-            lock (_driverService)
-            {
-                if (_driverService.ProcessId == 0)
-                {
-                    _driverService.Start();
-                }
-            }
+            var service = await _driverServicePool.GetStartedServiceAsync();
 
             var chromeOptions = new ChromeOptions();
 
@@ -36,9 +30,9 @@ namespace LaesoeLineApi.Selenium
             }
 
             // https://github.com/SeleniumHQ/selenium/issues/4988
-            //return new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), chromeOptions)
+            var serviceUrl = new Uri(service.ServiceUrl.ToString().Replace("localhost", "127.0.0.1"));
 
-            return await Task.Factory.StartNew(() => new RemoteWebDriver(new Uri($"http://127.0.0.1:{_options.Value.Port}"), chromeOptions));
+            return await Task.Factory.StartNew(() => new WebDriverWrapper(new RemoteWebDriver(serviceUrl, chromeOptions), () => _driverServicePool.Release(service)));
         }
     }
 }

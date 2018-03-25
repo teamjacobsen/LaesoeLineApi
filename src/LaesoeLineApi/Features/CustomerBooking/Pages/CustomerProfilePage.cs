@@ -14,6 +14,8 @@ namespace LaesoeLineApi.Features.CustomerBooking.Pages
             public static readonly By Username = By.Id("cw-login-customer-customerCode");
             public static readonly By Password = By.Id("cw-login-customer-password");
             public static readonly By Submit = By.CssSelector("button[type=submit]");
+
+            public static readonly By CustomerLogoutButton = By.ClassName("cw-do-customerlogout");
         }
 
         // Cancel
@@ -36,6 +38,8 @@ namespace LaesoeLineApi.Features.CustomerBooking.Pages
             await Driver.FindVisibleElementAsync(Login.Username).ThenSendKeys(username);
             await Driver.FindVisibleElementAsync(Login.Password).ThenSendKeys(password);
             await Driver.FindVisibleElementAsync(Login.Submit).ThenClick();
+
+            await Driver.WaitForElementToAppearAsync(Login.CustomerLogoutButton);
         }
 
         public async Task<bool> CancelAsync(string bookingNumber)

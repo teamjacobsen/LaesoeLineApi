@@ -35,11 +35,11 @@ namespace LaesoeLineApi.Features.AgentBooking.Pages
 
             Driver.SetValueWithScript(BookingDetails.OutboundDepartureCalendar, outbound.Departure.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
-            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundPassengersSelect).ThenSelectByValue(outbound.VehiclePassengers.ToString());
-            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundAdultsSelect).ThenSelectByValue(outbound.Adults.ToString());
-            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundChildrenSelect).ThenSelectByValue(outbound.Children.ToString());
-            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundSeniorsSelect).ThenSelectByValue(outbound.Seniors.ToString());
-            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundInfantsSelect).ThenSelectByValue(outbound.Infants.ToString());
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundPassengersSelect).ThenSelectByValue(outbound.VehiclePassengers.GetValueOrDefault().ToString());
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundAdultsSelect).ThenSelectByValue(outbound.Adults.GetValueOrDefault().ToString());
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundChildrenSelect).ThenSelectByValue(outbound.Children.GetValueOrDefault().ToString());
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundSeniorsSelect).ThenSelectByValue(outbound.Seniors.GetValueOrDefault().ToString());
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.OutboundInfantsSelect).ThenSelectByValue(outbound.Infants.GetValueOrDefault().ToString());
 
             var outboundVehicleValue = outbound.Vehicle.GetAttribute().OptionValue;
             if (outboundVehicleValue == null)
@@ -53,11 +53,11 @@ namespace LaesoeLineApi.Features.AgentBooking.Pages
 
             Driver.SetValueWithScript(BookingDetails.ReturnDepartureCalendar, @return.Departure.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
 
-            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnPassengersSelect).ThenSelectByValue(@return.VehiclePassengers.ToString());
-            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnAdultsSelect).ThenSelectByValue(@return.Adults.ToString());
-            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnChildrenSelect).ThenSelectByValue(@return.Children.ToString());
-            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnSeniorsSelect).ThenSelectByValue(@return.Seniors.ToString());
-            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnInfantsSelect).ThenSelectByValue(@return.Infants.ToString());
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnPassengersSelect).ThenSelectByValue(@return.VehiclePassengers.GetValueOrDefault().ToString());
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnAdultsSelect).ThenSelectByValue(@return.Adults.GetValueOrDefault().ToString());
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnChildrenSelect).ThenSelectByValue(@return.Children.GetValueOrDefault().ToString());
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnSeniorsSelect).ThenSelectByValue(@return.Seniors.GetValueOrDefault().ToString());
+            await Driver.FindVisibleSelectElementAsync(BookingDetails.ReturnInfantsSelect).ThenSelectByValue(@return.Infants.GetValueOrDefault().ToString());
 
             var returnVehicleValue = @return.Vehicle.GetAttribute().OptionValue;
             if (returnVehicleValue == null)

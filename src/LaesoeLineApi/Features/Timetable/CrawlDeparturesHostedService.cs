@@ -41,6 +41,9 @@ namespace LaesoeLineApi.Features.Timetable
                         _logger.LogInformation("Successfully synchronized departures for {Crossing} from {Date} for {Days} days", crossing, nowDate, days);
                     }
                 }
+                catch (TaskCanceledException)
+                {
+                }
                 catch (Exception e)
                 {
                     _logger.LogError(e, "Departure synchronization failed from {Date} for {Days} days", nowDate, days);

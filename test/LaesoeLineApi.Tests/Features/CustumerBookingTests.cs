@@ -20,7 +20,7 @@ namespace LaesoeLineApi.Tests.Features
             _fixture.Api.SetAuthorization(_fixture.CustomerUsername, _fixture.CustomerPassword);
 
             // When
-            var booking = await _fixture.Api.CustomerBooking.BookSeasonPassOneWay(new CustomerBookingBookOneWay()
+            var booking = await _fixture.Api.CustomerBooking.BookSeasonPassOneWayAsync(new CustomerBookingBookOneWay()
             {
                 Journey = new CustomerBookingJourney()
                 {
@@ -46,7 +46,7 @@ namespace LaesoeLineApi.Tests.Features
             _fixture.Api.SetAuthorization(_fixture.CustomerUsername, _fixture.CustomerPassword);
 
             // When
-            var booking = await _fixture.Api.CustomerBooking.BookSeasonPassRoundTrip(new CustomerBookingBookRoundTrip()
+            var booking = await _fixture.Api.CustomerBooking.BookSeasonPassRoundTripAsync(new CustomerBookingBookRoundTrip()
             {
                 Outbound = new CustomerBookingJourney()
                 {

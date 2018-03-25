@@ -6,3 +6,5 @@ src/*/obj
 src/LaesoeLineApi/Properties/PublishProfiles/Default Settings.pubxml
 test/*/bin
 test/*/obj
+test/LaesoeLineApi.Tests/credentials.json
+src/LaesoeLineApi/debug.log

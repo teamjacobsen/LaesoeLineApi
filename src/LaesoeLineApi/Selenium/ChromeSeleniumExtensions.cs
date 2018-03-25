@@ -9,21 +9,23 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ChromeSeleniumExtensions
     {
+        public static IServiceCollection AddChromeSeleniumWebDriver(this IServiceCollection services)
+        {
+            return AddChromeSeleniumWebDriver(services, null);
+        }
+
         public static IServiceCollection AddChromeSeleniumWebDriver(this IServiceCollection services, Action<ChromeSeleniumOptions> setupAction)
         {
             services.AddOptions();
-            services.Configure(setupAction);
+
+            if (setupAction != null)
+            {
+                services.Configure(setupAction);
+            }
+
             services
-                .AddSingleton<IWebDriverFactory, ChromeWebDriverFactory>()
-                .AddSingleton(x =>
-                {
-                    var options = x.GetRequiredService<IOptions<ChromeSeleniumOptions>>();
-
-                    var driverService = ChromeDriverService.CreateDefaultService(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-                    driverService.Port = options.Value.Port;
-
-                    return driverService;
-                });
+                .AddSingleton<ChromeDriverServicePool>()
+                .AddSingleton<IWebDriverFactory, ChromeWebDriverFactory>();
 
             return services;
         }

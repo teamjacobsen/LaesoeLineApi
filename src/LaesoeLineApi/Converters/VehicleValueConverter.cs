@@ -21,7 +21,11 @@ namespace LaesoeLineApi.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType != JsonToken.String)
+            if (reader.TokenType == JsonToken.Null)
+            {
+                return Vehicle.None;
+            }
+            else if (reader.TokenType != JsonToken.String)
             {
                 throw new NotSupportedException();
             }

@@ -6,10 +6,10 @@ namespace LaesoeLineApi
     public interface ICustomerBookingApi
     {
         [Post("/CustomerBooking/Book/SeasonPass/OneWay")]
-        Task<CustomerBookingBookSuccessResult> BookSeasonPassOneWay(CustomerBookingBookOneWay command);
+        Task<CustomerBookingBookSuccessResult> BookSeasonPassOneWayAsync(CustomerBookingBookOneWay command);
 
         [Post("/CustomerBooking/Book/SeasonPass/RoundTrip")]
-        Task<CustomerBookingBookSuccessResult> BookSeasonPassRoundTrip(CustomerBookingBookRoundTrip command);
+        Task<CustomerBookingBookSuccessResult> BookSeasonPassRoundTripAsync(CustomerBookingBookRoundTrip command);
 
         [Delete("/CustomerBooking/Bookings/{bookingNumber}")]
         Task CancelAsync(string bookingNumber);

@@ -32,7 +32,8 @@ namespace LaesoeLineApi
             services
                 .AddTimetableFeature(Configuration.GetSection("Timetable"))
                 .AddDistributedMemoryCache()
-                .AddChromeSeleniumWebDriver(options => options.Headless = _hostingEnvironment.IsProduction() || false)
+                //.AddChromeSeleniumWebDriver(options => options.Headless = _hostingEnvironment.IsProduction() || false)
+                .AddFirefoxSeleniumWebDriver(options => options.Headless = _hostingEnvironment.IsProduction() || false)
                 .AddSwaggerGen(options =>
                 {
                     options.AddSecurityDefinition("basic", new BasicAuthScheme() { Type = "basic", Description = "The Agent or Customer login" });
