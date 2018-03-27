@@ -29,7 +29,7 @@ namespace LaesoeLineApi
 
         public LaesoeLineApiClient(string baseUrl)
         {
-            if (!baseUrl.EndsWith('/'))
+            if (!baseUrl.EndsWith("/"))
             {
                 baseUrl += '/';
             }

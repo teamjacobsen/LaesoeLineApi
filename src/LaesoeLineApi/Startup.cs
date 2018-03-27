@@ -40,7 +40,7 @@ namespace LaesoeLineApi
                     options.DocumentFilter<BasicAuthFilter>();
                     options.SwaggerDoc("v1", new Info() { Title = "Laesoe Line", Version = "v1" });
                     options.DescribeAllEnumsAsStrings();
-                    options.CustomSchemaIds(x => x.FullName.Replace("LaesoeLineApi.Features", string.Empty));
+                    options.CustomSchemaIds(x => x.FullName.Replace("LaesoeLineApi.Features.", string.Empty));
                     options.OperationFilter<HonorRequiredAttributeFilter>();
 
                     var xmlPath = Path.Combine(AppContext.BaseDirectory, "LaesoeLineApi.xml");

@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>LaesoeLineApi</RootNamespace>
+    <Version>0.0.1</Version>
+    <Authors>Rasmus Jacobsen</Authors>
+    <Company>Team Jacobsen</Company>
+    <Product>Færgeselskabet Læsø API Klient</Product>
+    <PackageTags>laesoe-line</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
