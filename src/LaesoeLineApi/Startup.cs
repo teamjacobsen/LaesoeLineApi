@@ -1,5 +1,6 @@
 ﻿using idunno.Authentication;
 using LaesoeLineApi.Converters;
+using LaesoeLineApi.Filters;
 using LaesoeLineApi.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,14 +27,12 @@ namespace LaesoeLineApi
             Configuration = configuration;
         }
 
-
         public void ConfigureServices(IServiceCollection services)
         {
             services
                 .AddTimetableFeature(Configuration.GetSection("Timetable"))
                 .AddDistributedMemoryCache()
-                //.AddChromeSeleniumWebDriver(options => options.Headless = _hostingEnvironment.IsProduction() || false)
-                .AddFirefoxSeleniumWebDriver(options => options.Headless = _hostingEnvironment.IsProduction() || false)
+                .AddChromeSeleniumWebDriver(options => options.Headless = _hostingEnvironment.IsProduction() || false)
                 .AddSwaggerGen(options =>
                 {
                     options.AddSecurityDefinition("basic", new BasicAuthScheme() { Type = "basic", Description = "The Agent or Customer login" });
@@ -69,7 +68,10 @@ namespace LaesoeLineApi
                     };
                 });
 
-            services.AddMvc()
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new ApiExceptionFilter());
+            })
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.Converters.Add(new VehicleValueConverter());

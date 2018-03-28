@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleClient", "src\Exampl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "idunno.Authentication", "src\idunno.Authentication\idunno.Authentication.csproj", "{B4538AB9-CFD9-401C-AC27-7635E8AD903B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaesoeLineApi.Client", "src\LaesoeLineApi.Client\LaesoeLineApi.Client.csproj", "{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaesoeLineApi.Client", "src\LaesoeLineApi.Client\LaesoeLineApi.Client.csproj", "{7BA72D6A-3022-4824-8CE9-F8514BA4CDBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LaesoeLineApi.Tests", "test\LaesoeLineApi.Tests\LaesoeLineApi.Tests.csproj", "{F7604CF8-0149-4F60-9357-2710FECAB77C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaesoeLineApi.Tests", "test\LaesoeLineApi.Tests\LaesoeLineApi.Tests.csproj", "{F7604CF8-0149-4F60-9357-2710FECAB77C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3EFA472C-FD5E-4CE5-B4F6-349C91CE3241}"
 	ProjectSection(SolutionItems) = preProject

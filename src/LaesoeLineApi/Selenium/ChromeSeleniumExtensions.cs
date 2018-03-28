@@ -1,9 +1,5 @@
 ﻿using LaesoeLineApi.Selenium;
-using Microsoft.Extensions.Options;
-using OpenQA.Selenium.Chrome;
 using System;
-using System.IO;
-using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -24,8 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services
-                .AddSingleton<ChromeDriverServicePool>()
-                .AddSingleton<IWebDriverFactory, ChromeWebDriverFactory>();
+                .AddSingleton<IBrowserSessionFactory, ChromeBrowserSessionFactory>();
 
             return services;
         }

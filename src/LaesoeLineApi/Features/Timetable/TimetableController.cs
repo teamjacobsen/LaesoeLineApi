@@ -1,5 +1,4 @@
-﻿using LaesoeLineApi.Features.Timetable.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -36,7 +35,9 @@ namespace LaesoeLineApi.Features.Timetable
 
             await _crawlDeparturesProcessor.SyncDeparturesAsync(crossing, date.Value, days.Value, HttpContext.RequestAborted);
 
-            return Ok(await _cache.GetDeparturesAsync(crossing, date.Value, days.Value, true, HttpContext.RequestAborted));
+            var result = await _cache.GetDeparturesAsync(crossing, date.Value, days.Value, true, HttpContext.RequestAborted);
+
+            return Ok(result);
         }
     }
 }

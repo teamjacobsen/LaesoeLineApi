@@ -26,7 +26,7 @@ namespace ExampleClient
                     Crossing = Crossing.LaesoeFrederikshavn,
                     Departure = new DateTime(2018, 5, 2, 6, 0, 0),
                     Passengers = 1,
-                    Vehicle = VehicleType.Car
+                    Vehicle = Vehicle.Car
                 }
             });
 

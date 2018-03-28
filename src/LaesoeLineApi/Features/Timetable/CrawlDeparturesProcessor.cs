@@ -1,8 +1,5 @@
-﻿using LaesoeLineApi.Features.Timetable.Models;
-using LaesoeLineApi.Features.Timetable.Pages;
+﻿using LaesoeLineApi.Features.Timetable.Pages;
 using LaesoeLineApi.Selenium;
-using Microsoft.Extensions.DependencyInjection;
-using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +10,12 @@ namespace LaesoeLineApi.Features.Timetable
 {
     public class CrawlDeparturesProcessor
     {
-        private readonly IWebDriverFactory _webDriverFactory;
+        private readonly IBrowserSessionFactory _browserSessionFactory;
         private readonly DepartureCache _cache;
 
-        public CrawlDeparturesProcessor(IWebDriverFactory webDriverFactory, DepartureCache cache)
+        public CrawlDeparturesProcessor(IBrowserSessionFactory browserSessionFactory, DepartureCache cache)
         {
-            _webDriverFactory = webDriverFactory;
+            _browserSessionFactory = browserSessionFactory;
             _cache = cache;
         }
 
@@ -32,11 +29,13 @@ namespace LaesoeLineApi.Features.Timetable
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                using (var driver = await _webDriverFactory.CreateAsync())
+                using (var session = _browserSessionFactory.CreateSession())
                 {
-                    var bookPage = await driver.GoToAsync<BookPage>();
+                    var bookingDetails = await session.GoToAsync<BookingDetailsPage>();
+                    await bookingDetails.EnterDetailsAsync(crossing, vehicle, date);
 
-                    var departures = await bookPage.GetDeparturesAsync(crossing, vehicle, date, days);
+                    var departureSelect = await session.GoToAsync<DepartureSelectPage>();
+                    var departures = await departureSelect.GetDeparturesAsync(date, days, cancellationToken);
 
                     lock (vehicleResults)
                     {
@@ -48,7 +47,7 @@ namespace LaesoeLineApi.Features.Timetable
             await Task.WhenAll(vehicleResults.Select(x => _cache.SetDeparturesAsync(crossing, x.Key, x.Value, cancellationToken)));
         }
 
-        private void PatchAvailability(IDictionary<DateTime, DepartureInfo[]> master, Vehicle vehicle, IDictionary<DateTime, (DateTime Departure, bool IsAvailable)[]> patch)
+        private void PatchAvailability(IDictionary<DateTime, DepartureInfo[]> master, Vehicle vehicle, IDictionary<DateTime, (DateTime Departure, VehicleAvailabilityInfo Availability)[]> patch)
         {
             if (master.Count == 0)
             {
@@ -57,9 +56,9 @@ namespace LaesoeLineApi.Features.Timetable
                     master[pair.Key] = pair.Value.Select(x => new DepartureInfo()
                     {
                         Departure = x.Departure,
-                        Availability = new Dictionary<Vehicle, bool>()
+                        Availability = new Dictionary<Vehicle, VehicleAvailabilityInfo>()
                         {
-                            { vehicle, x.IsAvailable }
+                            { vehicle, x.Availability }
                         }
                     }).ToArray();
                 }

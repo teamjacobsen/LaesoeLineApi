@@ -1,4 +1,6 @@
-﻿namespace LaesoeLineApi
+﻿using OpenQA.Selenium;
+
+namespace LaesoeLineApi
 {
     public interface IPage
     {

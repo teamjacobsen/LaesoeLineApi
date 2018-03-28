@@ -8,6 +8,8 @@ namespace LaesoeLineApi.Converters
 {
     public class VehicleDictionaryKeyConverter : JsonConverter
     {
+        public override bool CanRead => false;
+
         public override bool CanConvert(Type objectType)
         {
             var dictionaryInterface = objectType.GetInterfaces().SingleOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IDictionary<,>));
@@ -38,8 +40,8 @@ namespace LaesoeLineApi.Converters
             {
                 var vehicle = (Vehicle)key;
 
-                writer.WritePropertyName(vehicle.GetAttribute().Value ?? vehicle.ToString());
-                writer.WriteValue(dictionary[key]);
+                writer.WritePropertyName(vehicle.ToCamelCase());
+                serializer.Serialize(writer, dictionary[key]);
             }
 
             writer.WriteEndObject();

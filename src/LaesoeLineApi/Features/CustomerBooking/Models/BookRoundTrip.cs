@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace LaesoeLineApi.Features.CustomerBooking.Models
+namespace LaesoeLineApi.Features.CustomerBooking
 {
     public class BookRoundTrip : IValidatableObject
     {

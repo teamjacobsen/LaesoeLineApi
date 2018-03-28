@@ -19,7 +19,7 @@ namespace LaesoeLineApi.Tests.Features
             // Given
 
             // When
-            await _fixture.Api.MyBooking.CancelAsync("309870", "ETPI");
+            await _fixture.Api.MyBooking.CancelAsync("311349", "KCAD");
 
             // Then
         }

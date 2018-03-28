@@ -1,10 +1,7 @@
-﻿using LaesoeLineApi.Features.AgentBooking.Models;
-using LaesoeLineApi.Features.AgentBooking.Pages;
+﻿using LaesoeLineApi.Features.AgentBooking.Pages;
 using LaesoeLineApi.Selenium;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OpenQA.Selenium;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -15,11 +12,11 @@ namespace LaesoeLineApi.Features.AgentBooking
     [Route("[controller]")]
     public class AgentBookingController : ControllerBase
     {
-        private readonly IWebDriverFactory _webDriverFactory;
+        private readonly IBrowserSessionFactory _browserSessionFactory;
 
-        public AgentBookingController(IWebDriverFactory webDriverFactory)
+        public AgentBookingController(IBrowserSessionFactory browserSessionFactory)
         {
-            _webDriverFactory = webDriverFactory;
+            _browserSessionFactory = browserSessionFactory;
         }
 
         [HttpPost("Book/It/RoundTrip")]
@@ -32,28 +29,31 @@ namespace LaesoeLineApi.Features.AgentBooking
                 return BadRequest(ModelState);
             }
 
-            using (var driver = await _webDriverFactory.CreateAsync())
+            using (var session = _browserSessionFactory.CreateSession())
             {
-                var loginPage = await driver.GoToAsync<LoginPage>();
+                var loginPage = await session.GoToAsync<LoginPage>();
                 await loginPage.LoginAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value, User.FindFirst(ClaimTypes.Authentication).Value);
 
-                var bookPage = await driver.GoToAsync<BookPage>();
-                var status = await bookPage.BookItRoundTripAsync(command.Customer, command.Outbound, command.Return);
-                var bookResult = new BookSuccessResult
+                var bookingDetailsPage = await session.GoToAsync<BookDetailsPage>();
+                await bookingDetailsPage.EnterDetailsAsync(command.Outbound, command.Return);
+
+                var departureSelectPage = await session.GoToAsync<BookDepartureSelectPage>();
+                await departureSelectPage.SelectDeparturesAsync(command.Outbound.Departure.Value, command.Return.Departure.Value);
+
+                var contactInformationPage = await session.GoToAsync<BookContantInformationPage>();
+                await contactInformationPage.EnterInformationAndCheckTermsAsync(command.Customer.Name, command.Customer.PhoneNumber, command.Customer.Email);
+
+                var bookingConfiguration = await session.GoToAsync<BookConfirmationPage>();
+                var details = await bookingConfiguration.GetBookingDetailsAsync();
+
+                var result = new BookSuccessResult
                 {
-                    BookingNumber = bookPage.BookingNumber,
-                    BookingPassword = bookPage.BookingPassword,
-                    TotalPrice = bookPage.Price
+                    BookingNumber = details.BookingNumber,
+                    BookingPassword = details.BookingPassword,
+                    TotalPrice = details.TotalPrice
                 };
 
-                if (status == BookStatus.Success)
-                {
-                    return Ok(bookResult);
-                }
-                else
-                {
-                    return StatusCode(StatusCodes.Status422UnprocessableEntity, new BookErrorResult(status));
-                }
+                return Ok(result);
             }
         }
     }

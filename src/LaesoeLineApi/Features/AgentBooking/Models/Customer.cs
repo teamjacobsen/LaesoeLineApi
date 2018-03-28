@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LaesoeLineApi.Features.AgentBooking.Models
+namespace LaesoeLineApi.Features.AgentBooking
 {
     public class Customer
     {

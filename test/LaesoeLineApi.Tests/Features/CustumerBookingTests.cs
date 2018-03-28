@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LaesoeLineApi.CustomerBooking;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -27,7 +28,7 @@ namespace LaesoeLineApi.Tests.Features
                     Crossing = Crossing.LaesoeFrederikshavn,
                     Departure = DateTime.UtcNow.AddDays(20).Date.AddHours(6),
                     Passengers = 1,
-                    Vehicle = VehicleType.Car
+                    Vehicle = Vehicle.Car
                 },
                 Local = true
             });
@@ -51,16 +52,16 @@ namespace LaesoeLineApi.Tests.Features
                 Outbound = new CustomerBookingJourney()
                 {
                     Crossing = Crossing.LaesoeFrederikshavn,
-                    Departure = DateTime.UtcNow.AddDays(20).Date.AddHours(6),
+                    Departure = DateTime.UtcNow.AddDays(21).Date.AddHours(6),
                     Passengers = 1,
-                    Vehicle = VehicleType.Car
+                    Vehicle = Vehicle.Car
                 },
                 Return = new CustomerBookingJourney()
                 {
                     Crossing = Crossing.FrederikshavnLaesoe,
-                    Departure = DateTime.UtcNow.AddDays(20).Date.AddHours(16).AddMinutes(50),
+                    Departure = DateTime.UtcNow.AddDays(21).Date.AddHours(16).AddMinutes(50),
                     Passengers = 1,
-                    Vehicle = VehicleType.Car
+                    Vehicle = Vehicle.Car
                 },
                 Local = true
             });
