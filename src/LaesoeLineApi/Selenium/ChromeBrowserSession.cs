@@ -30,7 +30,10 @@ namespace LaesoeLineApi.Selenium
             _services = services;
             _logger = logger;
             _options = options;
-            _thread = new Thread(Run);
+            _thread = new Thread(Run)
+            {
+                Priority = ThreadPriority.Lowest
+            };
         }
 
         public void Start() => _thread.Start();
