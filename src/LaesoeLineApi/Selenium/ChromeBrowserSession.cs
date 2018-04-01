@@ -126,7 +126,9 @@ namespace LaesoeLineApi.Selenium
 
             try
             {
-                return await tcs.Task.ContinueWith(x => (TResult)x.Result);
+                var result = await tcs.Task;
+
+                return (TResult)result;
             }
             catch (AggregateException e)
             {
