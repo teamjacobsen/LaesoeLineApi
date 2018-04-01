@@ -88,7 +88,7 @@ namespace LaesoeLineApi.Selenium
 
         public async Task InvokeAsync(Action<RemoteWebDriver> handler)
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _queue.Enqueue(new QueueItem()
             {
@@ -114,7 +114,7 @@ namespace LaesoeLineApi.Selenium
 
         public async Task<TResult> InvokeAsync<TResult>(Func<RemoteWebDriver, TResult> handler)
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _queue.Enqueue(new QueueItem()
             {
