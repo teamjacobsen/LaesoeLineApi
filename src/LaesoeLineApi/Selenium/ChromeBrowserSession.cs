@@ -154,7 +154,7 @@ namespace LaesoeLineApi.Selenium
                 chromeOptions.AddArgument("--disable-gpu");
             }
 
-            https://stackoverflow.com/questions/47877899/does-chrome-chrome-driver-support-pageloadstrategy-eager-for-selenium
+            // https://stackoverflow.com/questions/47877899/does-chrome-chrome-driver-support-pageloadstrategy-eager-for-selenium
             chromeOptions.PageLoadStrategy = PageLoadStrategy.None; // Eager is not supported
 
             using (var driver = new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), chromeOptions))
