@@ -1,4 +1,6 @@
 ﻿using LaesoeLineApi;
+using LaesoeLineApi.CustomerBooking;
+using LaesoeLineApi.Timetable;
 using System;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +43,7 @@ namespace ExampleClient
 
             foreach (var availability in departureInfo.Availability)
             {
-                if (availability.Value)
+                if (availability.Value.IsAvailable)
                 {
                     builder.AppendFormat("\t{0} (available)", availability.Key);
                 }
