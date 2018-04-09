@@ -90,6 +90,7 @@ namespace LaesoeLineApi
             }
 
             app
+                .UseCors(options => options.AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader())
                 .UseAuthentication()
                 .UseMvc()
                 .UseSwagger()
