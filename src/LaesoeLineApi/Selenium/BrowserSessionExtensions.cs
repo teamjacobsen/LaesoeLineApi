@@ -11,11 +11,13 @@ namespace LaesoeLineApi.Selenium
     {
         private static TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
 
+        private static IClock _systemClock = new SystemClock();
+
         public static Task WaitForInteractiveReadyStateAsync(this IBrowserSession session)
         {
             return session.InvokeAsync(driver =>
             {
-                var wait = new WebDriverWait(driver, DefaultTimeout);
+                var wait = new WebDriverWait(_systemClock, driver, DefaultTimeout, TimeSpan.FromMilliseconds(100));
 
                 wait.Until(_ => (bool?)driver.ExecuteScript("return (document.readyState === 'interactive' || document.readyState === 'complete') && window.jQuery && window.jQuery.active === 0") == true);
             });
@@ -78,8 +80,7 @@ namespace LaesoeLineApi.Selenium
         {
             return session.InvokeAsync(driver =>
             {
-                var clock = new SystemClock();
-                var wait = new WebDriverWait(clock, driver, DefaultTimeout, TimeSpan.FromMilliseconds(50));
+                var wait = new WebDriverWait(_systemClock, driver, DefaultTimeout, TimeSpan.FromMilliseconds(100));
 
                 wait.Until(_ => condition(driver));
             });

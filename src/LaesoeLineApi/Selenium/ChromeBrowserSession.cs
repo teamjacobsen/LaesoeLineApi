@@ -21,7 +21,7 @@ namespace LaesoeLineApi.Selenium
         private readonly ILogger<ChromeBrowserSession> _logger;
         private readonly IOptions<ChromeSeleniumOptions> _options;
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
-        private readonly SemaphoreSlim _wait = new SemaphoreSlim(0);
+        private readonly Semaphore _signal = new Semaphore(0, int.MaxValue);
         private readonly ConcurrentQueue<QueueItem> _queue = new ConcurrentQueue<QueueItem>();
         private readonly Thread _thread;
 
@@ -32,7 +32,7 @@ namespace LaesoeLineApi.Selenium
             _options = options;
             _thread = new Thread(Run)
             {
-                Priority = ThreadPriority.Lowest
+                IsBackground = true
             };
         }
 
@@ -76,7 +76,6 @@ namespace LaesoeLineApi.Selenium
                 stopwatch.Stop();
 
                 _logger.LogInformation("Navigation to {Url} took {ElapsedMilliseconds}ms", url, stopwatch.ElapsedMilliseconds);
-
             });
         }
 
@@ -103,7 +102,7 @@ namespace LaesoeLineApi.Selenium
                 }
             });
 
-            _wait.Release();
+            _signal.Release();
 
             try
             {
@@ -125,7 +124,7 @@ namespace LaesoeLineApi.Selenium
                 Handler = driver => handler(driver)
             });
 
-            _wait.Release();
+            _signal.Release();
 
             try
             {
@@ -171,42 +170,27 @@ namespace LaesoeLineApi.Selenium
 
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    try
+                    if (!_signal.WaitOne(1000))
                     {
-                        _wait.Wait(cancellationToken);
-                    }
-                    catch (TaskCanceledException)
-                    {
-                        break;
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        break;
+                        continue;
                     }
 
-                    try
+                    if (_queue.TryDequeue(out var item))
                     {
-                        if (_queue.TryDequeue(out var item))
+                        try
                         {
-                            try
-                            {
-                                var result = item.Handler(driver);
+                            var result = item.Handler(driver);
 
-                                cancellationToken.ThrowIfCancellationRequested();
+                            cancellationToken.ThrowIfCancellationRequested();
 
-                                item.TaskCompletionSource.SetResult(result);
-                            }
-                            catch (Exception e)
-                            {
-                                cancellationToken.ThrowIfCancellationRequested();
-
-                                item.TaskCompletionSource.SetException(e);
-                            }
+                            item.TaskCompletionSource.SetResult(result);
                         }
-                    }
-                    finally
-                    {
-                        _wait.Release();
+                        catch (Exception e)
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                            item.TaskCompletionSource.SetException(e);
+                        }
                     }
                 }
 
