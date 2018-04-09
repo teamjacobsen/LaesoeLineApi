@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -82,8 +81,6 @@ namespace LaesoeLineApi
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
