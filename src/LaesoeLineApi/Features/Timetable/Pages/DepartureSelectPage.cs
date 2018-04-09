@@ -113,7 +113,7 @@ namespace LaesoeLineApi.Features.Timetable.Pages
                 }
                 catch (UnhandledAlertException)
                 {
-                    // At random the site shows an alert with "Hov, der skete en fejl". The alert happens after approximately 20 seconds.
+                    // At random the site shows an alert with "Hov, der var en fejl". The alert happens after approximately 20 seconds.
                     // In this case we have not moved to the next date, so we need to retry the "later departures" click.
 
                     await _session.InvokeAsync(driver => driver.SwitchTo().Alert().Accept());
