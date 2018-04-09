@@ -42,6 +42,12 @@ namespace LaesoeLineApi.Selenium
         {
             await InvokeAsync(driver =>
             {
+                if (driver.Url == url && (bool?)driver.ExecuteScript("return (document.readyState === 'interactive' || document.readyState === 'complete') && window.jQuery && window.jQuery.active === 0") == true)
+                {
+                    _logger.LogInformation("Already at {Url}, not redirecting...", url);
+                    return;
+                }
+
                 var stopwatch = Stopwatch.StartNew();
 
                 driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(10);
