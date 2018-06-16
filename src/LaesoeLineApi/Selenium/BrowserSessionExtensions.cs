@@ -71,6 +71,22 @@ namespace LaesoeLineApi.Selenium
             return WaitForAsync(session, driver => driver.FindElements(by).Where(x => x.IsDisplayed()).Count() >= minCount);
         }
 
+        public static Task WaitForAnyElementToAppearAsync(this IBrowserSession session, params By[] anyOf)
+        {
+            return WaitForAsync(session, driver =>
+            {
+                foreach (var by in anyOf)
+                {
+                    if (driver.FindElements(by).Where(x => x.IsDisplayed()).Count() > 0)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            });
+        }
+
         public static Task WaitForElementToDisappearAsync(this IBrowserSession session, By by)
         {
             return WaitForAsync(session, driver => driver.FindElements(by).Where(x => x.IsDisplayed()).Count() == 0);

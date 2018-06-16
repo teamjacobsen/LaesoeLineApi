@@ -36,7 +36,7 @@ namespace LaesoeLineApi.Features.CustomerBooking.Pages
                     await _session.InvokeOnElementAsync(Login.Password, x => x.SendKeys(password));
                     await _session.InvokeOnElementAsync(Login.Submit, x => x.Click());
 
-                    await _session.WaitForElementToAppearAsync(Login.CustomerLogoutButton);
+                    await _session.WaitForAnyElementToAppearAsync(Login.CustomerLogoutButton, Login.AgentLogoutButton);
 
                     ok = true;
                     break;
@@ -82,6 +82,7 @@ namespace LaesoeLineApi.Features.CustomerBooking.Pages
             public static readonly By Submit = By.CssSelector("button[type=submit]");
 
             public static readonly By CustomerLogoutButton = By.ClassName("cw-do-customerlogout");
+            public static readonly By AgentLogoutButton = By.ClassName("cw-do-agentlogout");
         }
 
         private static class Cancel
