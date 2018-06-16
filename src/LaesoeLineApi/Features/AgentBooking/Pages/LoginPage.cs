@@ -8,7 +8,6 @@ namespace LaesoeLineApi.Features.AgentBooking.Pages
     public class LoginPage : PageBase
     {
         private readonly IBrowserSession _session;
-        private readonly ILogger<LoginPage> _logger;
 
         public override string Url { get; } = "https://booking.laesoe-line.dk/dk/book/it/customerLogin/";
 
@@ -16,7 +15,6 @@ namespace LaesoeLineApi.Features.AgentBooking.Pages
             : base(session, logger)
         {
             _session = session;
-            _logger = logger;
         }
 
         public Task LoginAsync(string username, string password)
