@@ -1,14 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace LaesoeLineApi
+namespace LaesoeLineApi.Features.AgentBooking
 {
     public class Customer
     {
         [Required]
-        public string FirstName { get; set; }
-
-        [Required]
-        public string LastName { get; set; }
+        public string Name { get; set; }
 
         [Required]
         [EmailAddress]

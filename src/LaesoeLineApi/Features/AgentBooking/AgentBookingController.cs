@@ -41,7 +41,7 @@ namespace LaesoeLineApi.Features.AgentBooking
                 await departureSelectPage.SelectDeparturesAsync(command.Outbound.Departure.Value, command.Return.Departure.Value);
 
                 var contactInformationPage = await session.GoToAsync<BookContantInformationPage>();
-                await contactInformationPage.EnterInformationAndCheckTermsAsync(command.Customer.FirstName, command.Customer.LastName, command.Customer.PhoneNumber, command.Customer.Email);
+                await contactInformationPage.EnterInformationAndCheckTermsAsync(command.Customer.Name, command.Customer.PhoneNumber, command.Customer.Email);
 
                 var bookingConfiguration = await session.GoToAsync<BookConfirmationPage>();
                 var details = await bookingConfiguration.GetBookingDetailsAsync();

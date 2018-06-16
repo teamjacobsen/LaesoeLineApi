@@ -2,8 +2,8 @@
 {
     public class AgentBookingBookRoundTrip
     {
-        public Customer Customer { get; set; } = new Customer();
-        public Journey Outbound { get; set; } = new Journey();
-        public Journey Return { get; set; } = new Journey();
+        public AgentBookingCustomer Customer { get; set; } = new AgentBookingCustomer();
+        public AgentBookingJourney Outbound { get; set; } = new AgentBookingJourney();
+        public AgentBookingJourney Return { get; set; } = new AgentBookingJourney();
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace LaesoeLineApi
+namespace LaesoeLineApi.Features.AgentBooking
 {
     public class Journey : IValidatableObject
     {

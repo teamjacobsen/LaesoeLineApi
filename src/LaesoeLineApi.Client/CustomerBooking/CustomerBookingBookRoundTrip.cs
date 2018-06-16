@@ -2,8 +2,8 @@
 {
     public class CustomerBookingBookRoundTrip
     {
-        public Journey Outbound { get; set; } = new Journey();
-        public Journey Return { get; set; } = new Journey();
+        public CustomerBookingJourney Outbound { get; set; } = new CustomerBookingJourney();
+        public CustomerBookingJourney Return { get; set; } = new CustomerBookingJourney();
         public bool Local { get; set; }
     }
 }

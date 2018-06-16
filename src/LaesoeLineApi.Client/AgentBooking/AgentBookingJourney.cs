@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace LaesoeLineApi
+namespace LaesoeLineApi.AgentBooking
 {
-    public class Journey
+    public class AgentBookingJourney
     {
         public Crossing Crossing { get; set; }
         public DateTime? Departure { get; set; }

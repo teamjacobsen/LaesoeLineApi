@@ -5,7 +5,6 @@
         Success,
 
         VehicleNotFound,
-        VehicleNotValid,
         DepartureNotFound,
         OutboundDepartureNotFound,
         ReturnDepartureNotFound,

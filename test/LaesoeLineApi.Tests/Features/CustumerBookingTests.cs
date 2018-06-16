@@ -5,32 +5,30 @@ using Xunit;
 
 namespace LaesoeLineApi.Tests.Features
 {
-    public class CustumerBookingSeasonPassTests : IClassFixture<TestFixture>
+    public class CustumerBookingTests : IClassFixture<TestFixture>
     {
         private readonly TestFixture _fixture;
-        private readonly TestFixture.Credentials _credentials;
 
-        public CustumerBookingSeasonPassTests(TestFixture fixture)
+        public CustumerBookingTests(TestFixture fixture)
         {
             _fixture = fixture;
-            _credentials = fixture.GetCredentials("SeasonPass");
         }
 
         [Fact]
         public async Task BookSeasonPassOneWay()
         {
             // Given
-            _fixture.Api.SetAuthorization(_credentials.Username, _credentials.Password);
+            _fixture.Api.SetAuthorization(_fixture.CustomerUsername, _fixture.CustomerPassword);
 
             // When
             var booking = await _fixture.Api.CustomerBooking.BookSeasonPassOneWayAsync(new CustomerBookingBookOneWay()
             {
-                Journey = new Journey()
+                Journey = new CustomerBookingJourney()
                 {
                     Crossing = Crossing.LaesoeFrederikshavn,
                     Departure = DateTime.UtcNow.AddDays(20).Date.AddHours(6),
-                    Vehicle = Vehicle.Car,
-                    VehiclePassengers = 1
+                    Passengers = 1,
+                    Vehicle = Vehicle.Car
                 },
                 Local = true
             });
@@ -46,24 +44,24 @@ namespace LaesoeLineApi.Tests.Features
         public async Task BookSeasonPassRoundTrip()
         {
             // Given
-            _fixture.Api.SetAuthorization(_credentials.Username, _credentials.Password);
+            _fixture.Api.SetAuthorization(_fixture.CustomerUsername, _fixture.CustomerPassword);
 
             // When
             var booking = await _fixture.Api.CustomerBooking.BookSeasonPassRoundTripAsync(new CustomerBookingBookRoundTrip()
             {
-                Outbound = new Journey()
+                Outbound = new CustomerBookingJourney()
                 {
                     Crossing = Crossing.LaesoeFrederikshavn,
                     Departure = DateTime.UtcNow.AddDays(21).Date.AddHours(6),
-                    Vehicle = Vehicle.Car,
-                    VehiclePassengers = 1
+                    Passengers = 1,
+                    Vehicle = Vehicle.Car
                 },
-                Return = new Journey()
+                Return = new CustomerBookingJourney()
                 {
                     Crossing = Crossing.FrederikshavnLaesoe,
                     Departure = DateTime.UtcNow.AddDays(21).Date.AddHours(16).AddMinutes(50),
-                    Vehicle = Vehicle.Car,
-                    VehiclePassengers = 1
+                    Passengers = 1,
+                    Vehicle = Vehicle.Car
                 },
                 Local = true
             });
@@ -86,7 +84,7 @@ namespace LaesoeLineApi.Tests.Features
         {
             try
             {
-                _fixture.Api.SetAuthorization(_credentials.Username, _credentials.Password);
+                _fixture.Api.SetAuthorization(_fixture.CustomerUsername, _fixture.CustomerPassword);
 
                 await _fixture.Api.CustomerBooking.CancelAsync(bookingNumber);
             }

@@ -7,11 +7,16 @@ namespace LaesoeLineApi.Features.AgentBooking.Pages
 {
     public class BookDetailsPage : BookingDetailsPageBase
     {
+        private readonly IBrowserSession _session;
+        private readonly ILogger<BookDetailsPage> _logger;
+
         public override string Url { get; } = "https://booking.laesoe-line.dk/dk/book/it/Rejsedetaljer/";
 
         public BookDetailsPage(IBrowserSession session, ILogger<BookDetailsPage> logger)
             : base(session, logger)
         {
+            _session = session;
+            _logger = logger;
         }
 
         public Task EnterDetailsAsync(Journey journey)
