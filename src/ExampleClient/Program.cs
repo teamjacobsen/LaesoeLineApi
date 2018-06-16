@@ -23,12 +23,12 @@ namespace ExampleClient
 
             var booking = await api.CustomerBooking.BookSeasonPassOneWayAsync(new CustomerBookingBookOneWay()
             {
-                Journey = new CustomerBookingJourney()
+                Journey = new Journey()
                 {
                     Crossing = Crossing.LaesoeFrederikshavn,
                     Departure = new DateTime(2018, 5, 2, 6, 0, 0),
-                    Passengers = 1,
-                    Vehicle = Vehicle.Car
+                    Vehicle = Vehicle.Car,
+                    VehiclePassengers = 1
                 }
             });
 

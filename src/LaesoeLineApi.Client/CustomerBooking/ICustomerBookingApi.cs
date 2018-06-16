@@ -5,6 +5,9 @@ namespace LaesoeLineApi
 {
     public interface ICustomerBookingApi
     {
+        [Post("/CustomerBooking/Book/OneDayFood")]
+        Task<BookResult> BookOneDayFoodAsync(CustomerBooking.CustomerBookingBookOneDay command);
+
         [Post("/CustomerBooking/Book/SeasonPass/OneWay")]
         Task<BookResult> BookSeasonPassOneWayAsync(CustomerBooking.CustomerBookingBookOneWay command);
 

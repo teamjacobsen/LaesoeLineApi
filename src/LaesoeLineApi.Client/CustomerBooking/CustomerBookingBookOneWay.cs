@@ -2,7 +2,7 @@
 {
     public class CustomerBookingBookOneWay
     {
-        public CustomerBookingJourney Journey { get; set; } = new CustomerBookingJourney();
+        public Journey Journey { get; set; } = new Journey();
         public bool Local { get; set; }
     }
 }

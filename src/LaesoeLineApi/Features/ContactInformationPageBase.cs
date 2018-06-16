@@ -26,11 +26,11 @@ namespace LaesoeLineApi.Features
             });
         }
 
-        public virtual Task EnterInformationAndCheckTermsAsync(string name, string phoneNumber, string email)
+        public virtual Task EnterInformationAndCheckTermsAsync(string firstName, string lastName, string phoneNumber, string email)
         {
             return ExecuteWithRetry(async () =>
             {
-                await PopulateInformationAsync(name, phoneNumber, email);
+                await PopulateInformationAsync(firstName, lastName, phoneNumber, email);
 
                 await PopulateTermsAsync();
 
@@ -38,14 +38,19 @@ namespace LaesoeLineApi.Features
             });
         }
 
-        protected async Task PopulateInformationAsync(string name, string phoneNumber, string email)
+        protected async Task PopulateInformationAsync(string firstName, string lastName, string phoneNumber, string email)
         {
+            await _session.InvokeOnElementAsync(FirstNameText, x =>
+            {
+                x.Clear();
+                x.SendKeys(firstName);
+            });
+
             await _session.InvokeOnElementAsync(LastNameText, x =>
             {
                 x.Clear();
-                x.SendKeys(name);
+                x.SendKeys(lastName);
             });
-
 
             await _session.InvokeOnElementAsync(MobileText, x =>
             {
@@ -73,6 +78,7 @@ namespace LaesoeLineApi.Features
             await _session.InvokeAsync(x => Thread.Sleep(500));
         }
 
+        protected static readonly By FirstNameText = By.Id("firstName");
         protected static readonly By LastNameText = By.Id("lastName");
         protected static readonly By MobileText = By.Id("mobile");
         protected static readonly By EmailText = By.Id("email");

@@ -44,9 +44,9 @@ namespace LaesoeLineApi.Features
                 throw new ApiException(ApiStatus.VehicleNotFound);
             }
 
-            await _session.InvokeOnSelectElementAsync(OutboundCrossingSelect, x => x.SelectByIndex((int)crossing));
+            await PopulateOutboundCrossingAsync(crossing);
 
-            await _session.SetValueWithScriptAsync(OutboundDepartureCalendar, departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+            await PopulateOutboundDepartureCalendarAsync(departure);
 
             await _session.InvokeOnSelectElementAsync(OutboundPassengersSelect, x => x.SelectByValue(passengers.ToString()));
 
@@ -55,15 +55,19 @@ namespace LaesoeLineApi.Features
 
         protected async Task PopulateOutboundAsync(Crossing crossing, DateTime departure, int adults, int children, int seniors, int infants)
         {
-            await _session.InvokeOnSelectElementAsync(OutboundCrossingSelect, x => x.SelectByIndex((int)crossing));
+            await PopulateOutboundCrossingAsync(crossing);
 
-            await _session.SetValueWithScriptAsync(OutboundDepartureCalendar, departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+            await PopulateOutboundDepartureCalendarAsync(departure);
 
-            await _session.InvokeOnSelectElementAsync(OutboundAdultsSelect, x => x.SelectByValue(adults.ToString()));
+            await PopulateOutboundAdultsSelectAsync(adults);
             await _session.InvokeOnSelectElementAsync(OutboundChildrenSelect, x => x.SelectByValue(children.ToString()));
             await _session.InvokeOnSelectElementAsync(OutboundSeniorsSelect, x => x.SelectByValue(seniors.ToString()));
             await _session.InvokeOnSelectElementAsync(OutboundInfantsSelect, x => x.SelectByValue(infants.ToString()));
         }
+
+        protected Task PopulateOutboundCrossingAsync(Crossing crossing) => _session.InvokeOnSelectElementAsync(OutboundCrossingSelect, x => x.SelectByIndex((int)crossing));
+        protected Task PopulateOutboundDepartureCalendarAsync(DateTime departure) => _session.SetValueWithScriptAsync(OutboundDepartureCalendar, departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        protected Task PopulateOutboundAdultsSelectAsync(int count) => _session.InvokeOnSelectElementAsync(OutboundAdultsSelect, x => x.SelectByValue(count.ToString()));
 
         protected async Task PopulateReturnAsync(Crossing crossing, DateTime departure, string vehicleOptionValue, int passengers)
         {
@@ -72,9 +76,9 @@ namespace LaesoeLineApi.Features
                 throw new ApiException(ApiStatus.VehicleNotFound);
             }
 
-            await _session.InvokeOnSelectElementAsync(ReturnCrossingSelect, x => x.SelectByIndex((int)crossing));
+            await PopulateReturnCrossingAsync(crossing);
 
-            await _session.SetValueWithScriptAsync(ReturnDepartureCalendar, departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+            await PopulateReturnDepartureCalendarAsync(departure);
 
             await _session.InvokeOnSelectElementAsync(ReturnPassengersSelect, x => x.SelectByValue(passengers.ToString()));
 
@@ -83,15 +87,19 @@ namespace LaesoeLineApi.Features
 
         protected async Task PopulateReturnAsync(Crossing crossing, DateTime departure, int adults, int children, int seniors, int infants)
         {
-            await _session.InvokeOnSelectElementAsync(ReturnCrossingSelect, x => x.SelectByIndex((int)crossing));
+            await PopulateReturnCrossingAsync(crossing);
 
-            await _session.SetValueWithScriptAsync(ReturnDepartureCalendar, departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+            await PopulateReturnDepartureCalendarAsync(departure);
 
-            await _session.InvokeOnSelectElementAsync(ReturnAdultsSelect, x => x.SelectByValue(adults.ToString()));
+            await PopulateReturnAdultsSelectAsync(adults);
             await _session.InvokeOnSelectElementAsync(ReturnChildrenSelect, x => x.SelectByValue(children.ToString()));
             await _session.InvokeOnSelectElementAsync(ReturnSeniorsSelect, x => x.SelectByValue(seniors.ToString()));
             await _session.InvokeOnSelectElementAsync(ReturnInfantsSelect, x => x.SelectByValue(infants.ToString()));
         }
+
+        protected Task PopulateReturnCrossingAsync(Crossing crossing) => _session.InvokeOnSelectElementAsync(ReturnCrossingSelect, x => x.SelectByIndex((int)crossing));
+        protected Task PopulateReturnDepartureCalendarAsync(DateTime departure) => _session.SetValueWithScriptAsync(ReturnDepartureCalendar, departure.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture));
+        protected Task PopulateReturnAdultsSelectAsync(int count) => _session.InvokeOnSelectElementAsync(ReturnAdultsSelect, x => x.SelectByValue(count.ToString()));
 
         protected async Task GoToNextStepAsync()
         {
