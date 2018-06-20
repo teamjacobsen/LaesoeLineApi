@@ -19,6 +19,44 @@ namespace LaesoeLineApi.Features.CustomerBooking
             _browserSessionFactory = browserSessionFactory;
         }
 
+        [HttpPost("Book/OneDay")]
+        [ProducesResponseType(typeof(BookSuccessResult), 200)]
+        [ProducesResponseType(typeof(BookErrorResult), 422)]
+        public async Task<IActionResult> BookOneDay([Required] [FromBody] BookOneDay command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            using (var session = _browserSessionFactory.CreateSession())
+            {
+                var customerProfilePage = await session.GoToAsync<CustomerProfilePage>();
+                await customerProfilePage.LoginAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value, User.FindFirst(ClaimTypes.Authentication).Value);
+
+                var bookingDetailsPage = await session.GoToAsync<BookOneDayDetailsPage>();
+                await bookingDetailsPage.EnterDetailsAsync(command.Outbound, command.Return);
+
+                var departureSelectPage = await session.GoToAsync<BookOneDayDepartureSelectPage>();
+                await departureSelectPage.SelectDeparturesAsync(command.Outbound.Departure.Value, command.Return.Departure.Value);
+
+                var contactInformationPage = await session.GoToAsync<BookOneDayContantInformationPage>();
+                await contactInformationPage.EnterInformationAndCheckTermsAsync(command.Customer.FirstName, command.Customer.LastName, command.Customer.PhoneNumber, command.Customer.Email);
+
+                var bookingConfiguration = await session.GoToAsync<BookOneDayConfirmationPage>();
+                var details = await bookingConfiguration.GetBookingDetailsAsync();
+
+                var result = new BookSuccessResult
+                {
+                    BookingNumber = details.BookingNumber,
+                    BookingPassword = details.BookingPassword,
+                    TotalPrice = details.TotalPrice
+                };
+
+                return Ok(result);
+            }
+        }
+
         [HttpPost("Book/OneDayFood")]
         [ProducesResponseType(typeof(BookSuccessResult), 200)]
         [ProducesResponseType(typeof(BookErrorResult), 422)]
@@ -34,7 +72,7 @@ namespace LaesoeLineApi.Features.CustomerBooking
                 var customerProfilePage = await session.GoToAsync<CustomerProfilePage>();
                 await customerProfilePage.LoginAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value, User.FindFirst(ClaimTypes.Authentication).Value);
 
-                var bookingDetailsPage = await session.GoToAsync<BookOneDayFoodPage>();
+                var bookingDetailsPage = await session.GoToAsync<BookOneDayFoodDetailsPage>();
                 await bookingDetailsPage.EnterDetailsAsync(command.Outbound, command.Return);
 
                 var departureSelectPage = await session.GoToAsync<BookOneDayFoodDepartureSelectPage>();

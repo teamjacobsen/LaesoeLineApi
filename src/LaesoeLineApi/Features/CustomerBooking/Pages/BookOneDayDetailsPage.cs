@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 
 namespace LaesoeLineApi.Features.CustomerBooking.Pages
 {
-    public class BookOneDayFoodPage : BookingDetailsPageBase
+    public class BookOneDayDetailsPage : BookingDetailsPageBase
     {
-        public override string Url { get; } = "https://booking.laesoe-line.dk/dk/book/endagsmad/Rejsedetaljer/";
+        public override string Url { get; } = "https://booking.laesoe-line.dk/dk/book/endagspakke/Rejsedetaljer/";
 
-        public BookOneDayFoodPage(IBrowserSession session, ILogger<BookOneDayFoodPage> logger)
+        public BookOneDayDetailsPage(IBrowserSession session, ILogger<BookOneDayDetailsPage> logger)
             : base(session, logger)
         {
         }
@@ -26,11 +26,13 @@ namespace LaesoeLineApi.Features.CustomerBooking.Pages
 
                 await PopulateOutboundCrossingAsync(outbound.Crossing.Value);
                 await PopulateOutboundDepartureCalendarAsync(outbound.Departure.Value);
-                await PopulateOutboundAdultsSelectAsync(outbound.Adults.Value);
+                await PopulateOutboundAdultsSelectAsync(outbound.Adults ?? 0);
+                await PopulateOutboundChildrenSelectAsync(outbound.Children ?? 0);
 
                 await PopulateReturnCrossingAsync(@return.Crossing.Value);
                 await PopulateReturnDepartureCalendarAsync(@return.Departure.Value);
-                await PopulateReturnAdultsSelectAsync(@return.Adults.Value);
+                await PopulateReturnAdultsSelectAsync(@return.Adults ?? 0);
+                await PopulateReturnChildrenSelectAsync(@return.Children ?? 0);
 
                 await GoToNextStepAsync();
             });

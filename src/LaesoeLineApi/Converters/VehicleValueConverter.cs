@@ -25,7 +25,7 @@ namespace LaesoeLineApi.Converters
                 throw new NotSupportedException();
             }
 
-            return Enum.Parse(typeof(Vehicle), (string)reader.Value, true);
+            return Enum.Parse<Vehicle>((string)reader.Value, true);
         }
     }
 }

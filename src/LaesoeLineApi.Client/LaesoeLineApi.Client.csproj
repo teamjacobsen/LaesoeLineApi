@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>LaesoeLineApi</RootNamespace>
-    <Version>0.0.3</Version>
-    <Authors>Rasmus Jacobsen</Authors>
+    <Version>0.0.4</Version>
+    <Authors>Rasmus Melchior Jacobsen</Authors>
     <Company>Team Jacobsen</Company>
     <Product>Færgeselskabet Læsø API Klient</Product>
     <PackageTags>laesoe-line</PackageTags>
