@@ -36,7 +36,7 @@ namespace LaesoeLineApi.Features
             {
                 var element = driver.FindElements(TotalPriceSpans).First();
 
-                totalPrice = decimal.Parse(element.Text.Replace(" DKK", string.Empty).Replace(',', '.'), CultureInfo.InvariantCulture);
+                totalPrice = decimal.Parse(element.Text.Replace(" DKK", string.Empty).Replace(".", string.Empty).Replace(',', '.'), CultureInfo.InvariantCulture);
             });
 
             return (bookingNumber, bookingPassword, totalPrice);
