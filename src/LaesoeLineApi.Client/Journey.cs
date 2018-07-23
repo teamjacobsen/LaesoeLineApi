@@ -5,7 +5,7 @@ namespace LaesoeLineApi
     public class Journey
     {
         public Crossing Crossing { get; set; }
-        public DateTime? Departure { get; set; }
+        public DateTime Departure { get; set; }
         public int? Seniors { get; set; }
         public int? Adults { get; set; }
         public int? Children { get; set; }
