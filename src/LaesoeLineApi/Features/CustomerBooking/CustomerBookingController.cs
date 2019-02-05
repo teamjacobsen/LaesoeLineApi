@@ -31,7 +31,7 @@ namespace LaesoeLineApi.Features.CustomerBooking
 
             using (var session = _browserSessionFactory.CreateSession())
             {
-                var customerProfilePage = await session.GoToAsync<CustomerProfilePage>();
+                var customerProfilePage = await session.GoToAsync<BookOneDayCustomerProfilePage>();
                 await customerProfilePage.LoginAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value, User.FindFirst(ClaimTypes.Authentication).Value);
 
                 var bookingDetailsPage = await session.GoToAsync<BookOneDayDetailsPage>();
@@ -69,7 +69,7 @@ namespace LaesoeLineApi.Features.CustomerBooking
 
             using (var session = _browserSessionFactory.CreateSession())
             {
-                var customerProfilePage = await session.GoToAsync<CustomerProfilePage>();
+                var customerProfilePage = await session.GoToAsync<BookOneDayFoodCustomerProfilePage>();
                 await customerProfilePage.LoginAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value, User.FindFirst(ClaimTypes.Authentication).Value);
 
                 var bookingDetailsPage = await session.GoToAsync<BookOneDayFoodDetailsPage>();
@@ -107,7 +107,7 @@ namespace LaesoeLineApi.Features.CustomerBooking
 
             using (var session = _browserSessionFactory.CreateSession())
             {
-                var customerProfilePage = await session.GoToAsync<CustomerProfilePage>();
+                var customerProfilePage = await session.GoToAsync<BookSeasonPassCustomerProfilePage>();
                 await customerProfilePage.LoginAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value, User.FindFirst(ClaimTypes.Authentication).Value);
 
                 var bookingDetailsPage = await session.GoToAsync<BookSeasonPassDetailsPage>();
@@ -145,7 +145,7 @@ namespace LaesoeLineApi.Features.CustomerBooking
 
             using (var session = _browserSessionFactory.CreateSession())
             {
-                var customerProfilePage = await session.GoToAsync<CustomerProfilePage>();
+                var customerProfilePage = await session.GoToAsync<BookSeasonPassCustomerProfilePage>();
                 await customerProfilePage.LoginAsync(User.FindFirst(ClaimTypes.NameIdentifier).Value, User.FindFirst(ClaimTypes.Authentication).Value);
 
                 var bookingDetailsPage = await session.GoToAsync<BookSeasonPassDetailsPage>();

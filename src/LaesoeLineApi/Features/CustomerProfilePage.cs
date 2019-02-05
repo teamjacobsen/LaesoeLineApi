@@ -3,14 +3,14 @@ using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using System.Threading.Tasks;
 
-namespace LaesoeLineApi.Features.CustomerBooking.Pages
+namespace LaesoeLineApi.Features
 {
     public class CustomerProfilePage : IPage
     {
         private readonly IBrowserSession _session;
         private readonly ILogger<CustomerProfilePage> _logger;
 
-        public string Url { get; } = "https://booking.laesoe-line.dk/dk/customer-profile/";
+        public virtual string Url { get; } = "https://booking.laesoe-line.dk/dk/book/customerLogin/";
 
         public CustomerProfilePage(IBrowserSession session, ILogger<CustomerProfilePage> logger)
         {
@@ -77,8 +77,8 @@ namespace LaesoeLineApi.Features.CustomerBooking.Pages
 
         private static class Login
         {
-            public static readonly By Username = By.Id("cw-login-customer-customerCode");
-            public static readonly By Password = By.Id("cw-login-customer-password");
+            public static readonly By Username = By.Id("username");
+            public static readonly By Password = By.Id("password");
             public static readonly By Submit = By.CssSelector("button[type=submit]");
 
             public static readonly By CustomerLogoutButton = By.ClassName("cw-do-customerlogout");
