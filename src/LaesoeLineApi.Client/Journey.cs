@@ -12,5 +12,6 @@ namespace LaesoeLineApi
         public int? Infants { get; set; }
         public int? VehiclePassengers { get; set; }
         public Vehicle? Vehicle { get; set; }
+        public int? VehicleLength { get; set; }
     }
 }

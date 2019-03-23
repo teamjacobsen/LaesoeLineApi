@@ -7,6 +7,8 @@
         CarShortTrailer12,
         CarMediumTrailer12,
         CarTallTrailer12,
-        Van
+        Van,
+        Motorhome,
+        OneDayCar
     }
 }

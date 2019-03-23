@@ -8,6 +8,9 @@ namespace LaesoeLineApi
         [Post("/CustomerBooking/Book/OneDay")]
         Task<BookResult> BookOneDayAsync(CustomerBooking.CustomerBookingBookOneDay command);
 
+        [Post("/CustomerBooking/Book/OneDayCar")]
+        Task<BookResult> BookOneDayCarAsync(CustomerBooking.CustomerBookingBookOneDay command);
+
         [Post("/CustomerBooking/Book/OneDayFood")]
         Task<BookResult> BookOneDayFoodAsync(CustomerBooking.CustomerBookingBookOneDay command);
 

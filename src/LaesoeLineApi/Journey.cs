@@ -29,6 +29,8 @@ namespace LaesoeLineApi
 
         public Vehicle Vehicle { get; set; } = Vehicle.None;
 
+        public int? VehicleLength { get; set; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (Vehicle == Vehicle.None)
@@ -54,6 +56,11 @@ namespace LaesoeLineApi
                 {
                     yield return new ValidationResult("At least one vehicle passenger is required");
                 }
+            }
+
+            if (Vehicle == Vehicle.Motorhome && VehicleLength == null)
+            {
+                yield return new ValidationResult("The VehicleLength is required for montorhomes");
             }
         }
     }

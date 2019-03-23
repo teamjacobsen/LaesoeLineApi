@@ -37,7 +37,7 @@ namespace LaesoeLineApi.Features
             });
         }
 
-        protected async Task PopulateOutboundAsync(Crossing crossing, DateTime departure, string vehicleOptionValue, int passengers)
+        protected async Task PopulateOutboundAsync(Crossing crossing, DateTime departure, string vehicleOptionValue, int passengers, int? vehicleLength = null)
         {
             if (vehicleOptionValue == null)
             {
@@ -51,6 +51,11 @@ namespace LaesoeLineApi.Features
             await _session.InvokeOnSelectElementAsync(OutboundPassengersSelect, x => x.SelectByValue(passengers.ToString()));
 
             await _session.InvokeOnSelectElementAsync(OutboundVehicleSelect, x => x.SelectByValue(vehicleOptionValue));
+
+            if (vehicleLength != null)
+            {
+                await _session.InvokeOnElementAsync(OutboundVehicleLength, x => x.SendKeys(vehicleLength.Value.ToString()));
+            }
         }
 
         protected async Task PopulateOutboundAsync(Crossing crossing, DateTime departure, int adults, int children, int seniors, int infants)
@@ -70,7 +75,7 @@ namespace LaesoeLineApi.Features
         protected Task PopulateOutboundAdultsSelectAsync(int count) => _session.InvokeOnSelectElementAsync(OutboundAdultsSelect, x => x.SelectByValue(count.ToString()));
         protected Task PopulateOutboundChildrenSelectAsync(int count) => _session.InvokeOnSelectElementAsync(OutboundChildrenSelect, x => x.SelectByValue(count.ToString()));
 
-        protected async Task PopulateReturnAsync(Crossing crossing, DateTime departure, string vehicleOptionValue, int passengers)
+        protected async Task PopulateReturnAsync(Crossing crossing, DateTime departure, string vehicleOptionValue, int passengers, int? vehicleLength = null)
         {
             if (vehicleOptionValue == null)
             {
@@ -84,6 +89,11 @@ namespace LaesoeLineApi.Features
             await _session.InvokeOnSelectElementAsync(ReturnPassengersSelect, x => x.SelectByValue(passengers.ToString()));
 
             await _session.InvokeOnSelectElementAsync(ReturnVehicleSelect, x => x.SelectByValue(vehicleOptionValue));
+
+            if (vehicleLength != null)
+            {
+                await _session.InvokeOnElementAsync(ReturnVehicleLength, x => x.SendKeys(vehicleLength.ToString()));
+            }
         }
 
         protected async Task PopulateReturnAsync(Crossing crossing, DateTime departure, int adults, int children, int seniors, int infants)
@@ -130,6 +140,7 @@ namespace LaesoeLineApi.Features
         protected static readonly By OutboundSeniorsSelect = By.Id("cw-journeysearch-pax-1-4");
         protected static readonly By OutboundInfantsSelect = By.Id("cw-journeysearch-pax-1-2");
         protected static readonly By OutboundVehicleSelect = By.Name("cw_journeysearch_j1_vehicles[0][ctg]");
+        protected static readonly By OutboundVehicleLength = By.Name("cw_journeysearch_j1_vehicles[0][vLength]");
 
         protected static readonly By ReturnCrossingSelect = By.Id("j2_route-j2_route");
         protected const string ReturnDepartureCalendar = "input.cw-journeysearch-calendar-2";
@@ -139,6 +150,7 @@ namespace LaesoeLineApi.Features
         protected static readonly By ReturnSeniorsSelect = By.Id("cw-journeysearch-pax-2-4");
         protected static readonly By ReturnInfantsSelect = By.Id("cw-journeysearch-pax-2-2");
         protected static readonly By ReturnVehicleSelect = By.Name("cw_journeysearch_j2_vehicles[0][ctg]");
+        protected static readonly By ReturnVehicleLength = By.Name("cw_journeysearch_j2_vehicles[0][vLength]");
 
         protected static readonly By NextButton = By.CssSelector("button.cw-action-next");
     }

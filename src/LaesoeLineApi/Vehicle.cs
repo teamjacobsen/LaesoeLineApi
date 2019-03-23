@@ -18,6 +18,12 @@
         CarTallTrailer12,
 
         [VehicleValue("21")]
-        Van
+        Van,
+
+        [VehicleValue("44")]
+        Motorhome,
+
+        [VehicleValue("13")]
+        OneDayCar
     }
 }
